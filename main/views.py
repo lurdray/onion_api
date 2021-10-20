@@ -12,23 +12,66 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 
 
+import random
+import string
+
+from django.core import mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
+
+
+
+def ray_randomiser(length=12):
+    landd = string.ascii_letters + string.digits
+    return ''.join((random.choice(landd) for i in range(length)))
+
+
+
+
+def RaySendMail(request, subject, message, to_email, code=None):
+
+    context = {"subject": subject, "message": message, "code": code}
+    html_message = render_to_string('main/message.html', context)
+    message = strip_tags(message)
+
+    send_mail(
+        subject,
+        message,
+        'onionng@onionng.com',
+        [to_email,],
+        html_message=html_message,
+        fail_silently=False,
+    )
+
+
+
 
 @api_view(['POST'])
 def SignUpView(request):
 
     if request.method == 'POST':
 
-        full_name =request.data["full_name"]
+        request.session.create()
+        auth_code = request.session.session_key
+
+        first_name =request.data["first_name"]
+        last_name =request.data["last_name"]
         email =request.data["email"]
-        username = request.data["username"]
         password = request.data["password"]
 
-        user = User(username=username)
+        user = User(username=email)
         user.set_password(password)
         user.save()
 
-        app_user = AppUser.objects.create(user=user, full_name=full_name, email=email)
+        app_user = AppUser.objects.create(user=user, auth_code=auth_code, first_name=first_name, last_name=last_name, email=email)
+
+        request_code = ray_randomiser()
+        app_user.request_code = request_code
         app_user.save()
+
+        RaySendMail(request, "Authentication", "Welcome to Onionng.com, Please use the authentication code below to complete your sign up!", app_user.user.username, code=request_code)
+
 
         data = {"status": "sign up successful"}
 
@@ -46,15 +89,14 @@ def SignUpView(request):
 def SignInView(request):
     if request.method == 'POST':
 
-        username = request.data["username"]
+        email = request.data["email"]
         password = request.data["password"]
 
-        user = authenticate(username=username, password=password)
+        user = authenticate(username=email, password=password)
 
         if user:
             if user.is_active:
                 login(request, user)
-
 
             data = {"status": "sign in successful"}
 
@@ -68,7 +110,8 @@ def SignInView(request):
 
 
         else:
-            return HttpResponse(str("errors!"))
+            return Response(status.HTTP_400_BAD_REQUEST)
+            #return HttpResponse(str("errors!"))
 
 
 
@@ -96,19 +139,27 @@ def GetAppUserView(request, app_user_id):
 
 @api_view(['POST'])
 def AddProblemView(request):
-    app_user = AppUser.objects.get(user__pk=request.user.id)
 
     if request.method == 'POST':
-        #is_private = request.POST['is_private']
 
+        auth_code =request.data["auth_code"]
         title =request.data["title"]
-        #video = request.FILES["video"]
+        video = request.FILES["video"]
         detail = request.data["detail"]
 
-        #enctype=multipart/form-data
-        #return HttpResponse(video)
+        category =request.data["category"]
+        tag1 =request.data["tag1"]
+        tag2 =request.data["tag2"]
+        tag3 =request.data["tag3"]
+        tag4 =request.data["tag4"]
+        tag5 =request.data["tag5"]
 
-        problem = Problem.objects.create(app_user=app_user, title=title, detail=detail)
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        problem = Problem.objects.create(app_user=app_user, title=title, detail=detail,
+            category=category, tag1=tag1, tag2=tag2, tag3=tag3, tag4=tag4, tag5=tag5)
+        
+        problem.video = video
         problem.save()
 
         data = {"status": "Problem added successfully"}
@@ -125,18 +176,103 @@ def AddProblemView(request):
 
 
 @api_view(['POST'])
-def AddSolutionView(request):
-    app_user = AppUser.objects.get(user__pk=request.user.id)
-    
+def EditProblemView(request):
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+
+        category =request.data["category"]
+        tag1 =request.data["tag1"]
+        tag2 =request.data["tag2"]
+        tag3 =request.data["tag3"]
+        tag4 =request.data["tag4"]
+        tag5 =request.data["tag5"]
+
+        problem_id = request.data["problem_id"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        problem = Problem.objects.get(id=problem_id)
+        problem.category = category
+        problem.tag1 = tag1
+        problem.tag2 = tag2
+        problem.tag3 = tag3
+        problem.tag4 = tag4
+        problem.tag5 = tag5
+
+        problem.save()
+
+        data = {"status": "Problem edited successfully"}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+@api_view(['POST'])
+def EditAppUserView(request):
+    print(request.session.session_key)
 
     if request.method == 'POST':
 
-        title =request.data["title"]
-        #video = request.FILES["video"]
-        detail = request.data["detail"]
+        auth_code =request.data["auth_code"]
 
-        problem = Problem.objects.get(id=request.data["problem_id"])
+        first_name =request.data["first_name"]
+        last_name =request.data["last_name"]
+
+        password =request.data["password"]
+
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        user = User.objects.get(username=app_user.email)
+        user.set_password(password)
+        user.save()
+
+        app_user.first_name = first_name
+        app_user.last_name = last_name
+
+        app_user.save()
+
+        data = {"status": "User edited successfully"}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+        
+
+
+
+@api_view(['POST'])
+def AddSolutionView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        title =request.data["title"]
+        video = request.FILES["video"]
+        detail = request.data["detail"]
+        problem_id = request.data["problem_id"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        problem = Problem.objects.get(id=problem_id)
         solution = Solution.objects.create(app_user=app_user, problem=problem, title=title, detail=detail)
+        solution.video = video
         solution.save()
 
         data = {"status": "Solution added successfully"}
@@ -227,6 +363,248 @@ def GetAllSolutionsView(request):
 
 
 
+@api_view(['POST'])
+def AddProblemClapView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        problem_id = request.data["problem_id"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        problem = Problem.objects.get(id=problem_id)
+        clap = Clap.objects.create(app_user=app_user)
+
+        pc = ProblemClapConnector(problem=problem, clap=clap)
+        pc.save()
+
+        data = {"status": "Clap added successfully"}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['POST'])
+def AddProblemBuzzView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        problem_id = request.data["problem_id"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        problem = Problem.objects.get(id=problem_id)
+        buzzer = Buzzer.objects.create(app_user=app_user)
+
+        pb = ProblemBuzzerConnector(problem=problem, buzzer=buzzer)
+        pb.save()
+
+        data = {"status": "Buzz added successfully"}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+@api_view(['POST'])
+def AddSolutionClapView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        solution_id = request.data["solution_id"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        solution = Solution.objects.get(id=solution_id)
+        clap = Clap.objects.create(app_user=app_user)
+
+        sc = SolutionClapConnector(solution=solution, clap=clap)
+        sc.save()
+
+        data = {"status": "Clap added successfully"}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['POST'])
+def AddSolutionBuzzView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        solution_id = request.data["solution_id"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        solution = Solution.objects.get(id=solution_id)
+        buzzer = Buzzer.objects.create(app_user=app_user)
+
+        sb = SolutionBuzzerConnector(solution=solution, buzzer=buzzer)
+        sb.save()
+
+        data = {"status": "Buzz added successfully"}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+@api_view(['POST'])
+def RateSolutionView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        rating = request.data["rating"]
+        solution_id = request.data["solution_id"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        solution = Solution.objects.get(id=solution_id)
+        solution.rating = int(rating)
+        solution.save()
+
+        data = {"status": "Rating added successfully"}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+@api_view(['POST'])
+def RequestNewPwView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        email =request.data["email"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        request_code = ray_randomiser()
+        app_user.request_code = request_code
+        app_user.save()
+
+        RaySendMail(request, "Password Reset", "Someone(you hopefully) have requested for a password change!", app_user.user.username, code=request_code)
+
+        data = {"status": "New Password request was successful"}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['POST'])
+def SetNewPwView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        request_code =request.data["request_code"]
+        password1 =request.data["password1"]
+        password2 =request.data["password2"]
+
+        if password2 == password1:
+
+            app_user = AppUser.objects.get(auth_code=auth_code)
+
+            if app_user.request_code == request_code:
+
+                user = User.objects.get(username=app_user.email)
+                user.set_password(password1)
+                user.save()
+
+                data = {"status": "New Password set successfully"}
+
+                serializer = StatusSerializer(data=data)
+
+                if serializer.is_valid():
+                    #serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+        else:
+            return Response(status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['POST'])
+def ActivateUserView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        request_code =request.data["request_code"]
+        email =request.data["email"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        if app_user.request_code == request_code:
+
+            app_user.ec_status = True
+            app_user.save()
+
+            data = {"status": "Email confirmed successfully"}
+
+            serializer = StatusSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -241,6 +619,18 @@ def GetAllSolutionsView(request):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+##########################################
 @api_view(['GET'])
 def GetBnbBalanceView(request, wallet_address):
 

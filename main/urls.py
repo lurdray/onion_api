@@ -15,9 +15,12 @@ urlpatterns = [
     path('sign-in/', views.SignInView),
 
     path('get-appuser/<int:app_user_id>/', views.GetAppUserView),
+    path('edit-appuser/', views.EditAppUserView),
 
     path('add-problem/', views.AddProblemView),
+    path('edit-problem/', views.EditProblemView),
     path('add-solution/', views.AddSolutionView),
+
 
     path('get-user-problems/<int:app_user_id>/', views.GetUserProblemsView),
     path('get-user-solutions/<int:app_user_id>/', views.GetUserSolutionsView),
@@ -25,6 +28,18 @@ urlpatterns = [
 
     path('get-all-problems/', views.GetAllProblemsView),
     path('get-all-solutions/', views.GetAllSolutionsView),
+
+    path('problem/add-clap/', views.AddProblemClapView),
+    path('problem/add-buzz/', views.AddProblemBuzzView),
+
+    path('solution/add-clap/', views.AddSolutionClapView),
+    path('solution/add-buzz/', views.AddSolutionBuzzView),
+
+    path('solution/add-rating/', views.RateSolutionView),
+
+    path('appuser/request/new-password/', views.RequestNewPwView),
+    path('appuser/set/new-password/', views.SetNewPwView),
+    path('appuser/activate/', views.ActivateUserView),
 
 ]
 

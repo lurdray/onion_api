@@ -1,0 +1,212 @@
+{% extends 'admin_app/base.html' %}
+{% load static %}
+
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0 text-dark">Dashboard</h1>
+                    </div><!-- /.col -->
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item active">Index</li>
+                        </ol>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content-header -->
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <!-- Small boxes (Stat box) -->
+                <div class="row">
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-danger">
+                            <div class="inner">
+                                <h3>{{ approved_solutions.count }}</h3>
+
+                                <p>Approved Solutions</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-stats-bars"></i>
+                            </div>
+                            <a href="{% url 'admin_app:all_problems' %}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3>{{ solutions.count }}</h3>
+
+                                <p>All Solutions</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-stats-bars"></i>
+                            </div>
+                            <a href="{% url 'admin_app:all_problems' %}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                    <!-- ./col -->
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>{{ problems.count }}</h3>
+
+                                <p>Problems</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-stats-bars"></i>
+                            </div>
+                            <a href="{% url 'admin_app:all_problems' %}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                    <!-- ./col -->
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-warning">
+                            <div class="inner">
+                                <h3>{{ app_users.count }}</h3>
+
+                                <p>Total Users</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-person-add"></i>
+                            </div>
+                            <a href="{% url 'admin_app:all_users' %}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                    <!-- ./col -->
+                    
+                    <!-- ./col -->
+                </div>
+                <!-- /.row -->
+                <!-- Main row -->
+                <div class="row">
+                    <!-- Left col -->
+                    <section class="col-lg-6 connectedSortable">
+                        <!-- Custom tabs (Charts with tabs)-->
+                        <div class="row">
+                          <div class="col-12">
+                            <div class="card card-primary">
+                              <div class="card-header">
+                                <h3 class="card-title">Latest Problems(10)</h3>
+
+                              </div>
+                              <!-- /.card-header -->
+                              <div class="card-body table-responsive p-0">
+                                {% if latest_problems %}
+                                <table class="table table-hover text-nowrap container">
+                                  <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in latest_problems %}
+                                        <tr>
+                                            <td>{{ item.title }}</td>
+                                            <td>{{ item.pub_date }}</td>
+                                            <td><a class="btn btn-primary" href="{% url 'admin_app:problem_detail' item.id %}">Details</a> </td>
+                                            <td></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                                {% else %}
+
+                                    <p class="container-fluid">Sorry, Nothing Yet!</p>    
+
+                                {% endif %}
+
+                                    </div>
+                                
+                                </div>
+
+                            </div>
+                        </div>
+   
+                        <!-- /.card -->
+                    </section>
+                    <!-- /.Left col -->
+                    <!-- right col (We are only adding the ID to make the widgets sortable)-->
+                    <section class="col-lg-6 connectedSortable">
+
+
+                        <div class="row">
+                          <div class="col-12">
+                            <div class="card card-primary">
+                              <div class="card-header">
+                                <h3 class="card-title">Latest Users(10)</h3>
+
+                              </div>
+                              <!-- /.card-header -->
+                              <div class="card-body table-responsive p-0">
+                                {% if latest_users %}
+                                <table class="table table-hover text-nowrap container">
+                                  <thead>
+                                    <tr>
+                                        <th>Full Name</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in latest_users %}
+                                        <tr>
+                                            <td>{{ item.first_name }} {{ item.last_name }}</td>
+                                            <td>{{ item.pub_date }}</td>
+                                            <td><a class="btn btn-primary" href="{% url 'admin_app:all_users' %}">Details</a> </td>
+                                            <td></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                                {% else %}
+
+                                    <p class="container-fluid">Sorry, Nothing Yet!</p>    
+
+                                {% endif %}
+
+                                    </div>
+                                
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+
+                        <!-- /.card -->
+                    </section>
+                    <!-- right col -->
+                </div>
+                <!-- /.row (main row) -->
+            </div><!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
+    </div>
+
+    {% endblock %}
