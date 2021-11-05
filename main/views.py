@@ -70,7 +70,7 @@ def SignUpView(request):
         app_user.request_code = request_code
         app_user.save()
 
-        RaySendMail(request, "Authentication", "Welcome to Onionng.com, Please use the authentication code below to complete your sign up!", app_user.user.username, code=request_code)
+        #RaySendMail(request, "Authentication", "Welcome to Onionng.com, Please use the authentication code below to complete your sign up!", app_user.user.username, code=request_code)
 
 
         data = {"status": "sign up successful"}
@@ -98,9 +98,13 @@ def SignInView(request):
             if user.is_active:
                 login(request, user)
 
-            data = {"status": "sign in successful"}
+            app_user = AppUser.objects.get(user__pk=request.user.id)
+            data = {
+                "status": "sign in successful",
+                "auth_code": app_user.auth_code,
+            }
 
-            serializer = StatusSerializer(data=data)
+            serializer = SignInStatusSerializer(data=data)
 
             if serializer.is_valid():
                 #serializer.save()
@@ -119,8 +123,8 @@ def SignInView(request):
 
 
 @api_view(['GET'])
-def GetAppUserView(request, app_user_id):
-    app_user = AppUser.objects.filter(id=app_user_id)
+def GetAppUserView(request, auth_code):
+    app_user = AppUser.objects.filter(auth_code=auth_code)
     if request.method == 'GET':
 
         serializer = AppUserSerializer(app_user, many=True)
@@ -148,23 +152,57 @@ def AddProblemView(request):
         detail = request.data["detail"]
 
         category =request.data["category"]
-        tag1 =request.data["tag1"]
-        tag2 =request.data["tag2"]
-        tag3 =request.data["tag3"]
-        tag4 =request.data["tag4"]
-        tag5 =request.data["tag5"]
+        
+        
+        try:
+            tag1 =request.data["tag1"]
+        except:
+            tag1 = None
+            
+        try:
+            tag2 =request.data["tag2"]
+        except:
+            tag2 = None
+            
+        try:
+            tag3 =request.data["tag3"]
+        except:
+            tag3 = None
+            
+        try:
+            tag4 =request.data["tag4"]
+        except:
+            tag4 = None
+            
+        try:
+            tag5 =request.data["tag5"]
+        except:
+            tag5 = None
 
         app_user = AppUser.objects.get(auth_code=auth_code)
 
-        problem = Problem.objects.create(app_user=app_user, title=title, detail=detail,
-            category=category, tag1=tag1, tag2=tag2, tag3=tag3, tag4=tag4, tag5=tag5)
+        problem = Problem.objects.create(app_user=app_user, title=title, detail=detail, category=category)
         
+        if tag1:
+            problem.tag1 = tag1
+        if tag2:
+            problem.tag2 = tag2
+        if tag3:
+            problem.tag3 = tag3
+        if tag4:
+            problem.tag4 = tag4
+        if tag5:
+            problem.tag5 = tag5
+            
         problem.video = video
         problem.save()
 
-        data = {"status": "Problem added successfully"}
+        data = {
+            "status": "Problem added successfully",
+            "problem_id": problem.id,
+        }
 
-        serializer = StatusSerializer(data=data)
+        serializer = AddProblemStatusSerializer(data=data)
 
         if serializer.is_valid():
             #serializer.save()
@@ -182,29 +220,59 @@ def EditProblemView(request):
         auth_code =request.data["auth_code"]
 
         category =request.data["category"]
-        tag1 =request.data["tag1"]
-        tag2 =request.data["tag2"]
-        tag3 =request.data["tag3"]
-        tag4 =request.data["tag4"]
-        tag5 =request.data["tag5"]
-
+        
+        try:
+            tag1 =request.data["tag1"]
+        except:
+            tag1 = None
+            
+        try:
+            tag2 =request.data["tag2"]
+        except:
+            tag2 = None
+            
+        try:
+            tag3 =request.data["tag3"]
+        except:
+            tag3 = None
+            
+        try:
+            tag4 =request.data["tag4"]
+        except:
+            tag4 = None
+            
+        try:
+            tag5 =request.data["tag5"]
+        except:
+            tag5 = None
+            
+            
         problem_id = request.data["problem_id"]
 
         app_user = AppUser.objects.get(auth_code=auth_code)
 
         problem = Problem.objects.get(id=problem_id)
         problem.category = category
-        problem.tag1 = tag1
-        problem.tag2 = tag2
-        problem.tag3 = tag3
-        problem.tag4 = tag4
-        problem.tag5 = tag5
+        
+        if tag1:
+            problem.tag1 = tag1
+        if tag2:
+            problem.tag2 = tag2
+        if tag3:
+            problem.tag3 = tag3
+        if tag4:
+            problem.tag4 = tag4
+        if tag5:
+            problem.tag5 = tag5
 
         problem.save()
 
-        data = {"status": "Problem edited successfully"}
+        data = {
+            "status": "Problem edited successfully",
+            "problem_id": problem.id,
+        }
 
-        serializer = StatusSerializer(data=data)
+        serializer = AddProblemStatusSerializer(data=data)
 
         if serializer.is_valid():
             #serializer.save()
@@ -275,9 +343,12 @@ def AddSolutionView(request):
         solution.video = video
         solution.save()
 
-        data = {"status": "Solution added successfully"}
+        data = {
+            "status": "Solution added successfully",
+            "solution_id": solution.id,
+        }
 
-        serializer = StatusSerializer(data=data)
+        serializer = AddSolutionStatusSerializer(data=data)
 
         if serializer.is_valid():
             #serializer.save()

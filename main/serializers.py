@@ -3,6 +3,29 @@ from django.contrib.auth.models import User, Group
 from .models import *
 
 
+
+class AddSolutionStatusSerializer(serializers.Serializer):
+    status = serializers.CharField(max_length=120)
+    solution_id = serializers.CharField(max_length=120)
+    class Meta:
+        #model = Wallet
+        fields = ('status', 'solution_id')
+
+class AddProblemStatusSerializer(serializers.Serializer):
+    status = serializers.CharField(max_length=120)
+    problem_id = serializers.CharField(max_length=120)
+    class Meta:
+        #model = Wallet
+        fields = ('status', 'problem_id')
+
+
+class SignInStatusSerializer(serializers.Serializer):
+    status = serializers.CharField(max_length=120)
+    auth_code = serializers.CharField(max_length=120)
+    class Meta:
+        #model = Wallet
+        fields = ('status', 'auth_code')
+
 class StatusSerializer(serializers.Serializer):
     status = serializers.CharField(max_length=120)
     class Meta:

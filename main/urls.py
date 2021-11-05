@@ -14,7 +14,7 @@ urlpatterns = [
     path('sign-up/', views.SignUpView),
     path('sign-in/', views.SignInView),
 
-    path('get-appuser/<int:app_user_id>/', views.GetAppUserView),
+    path('get-appuser/<str:auth_code>/', views.GetAppUserView),
     path('edit-appuser/', views.EditAppUserView),
 
     path('add-problem/', views.AddProblemView),

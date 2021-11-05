@@ -10,16 +10,19 @@ import requests
 
 
 
-url = "http://localhost:8000/sign-up/"
+url = "http://onionsng.com/sign-up/"
 data = {
-	"first_name": "sam peter",
-	"last_name": "peter",
-	"email": "odiagaraymondray@gmail.com",
+	"first_name": "test user20",
+	"last_name": "ray",
+	"email": "testemail20@gmail.com",
 	"password": "0000"
 }
 
-#r = requests.post(url, data=data)
-#print(r.status_code)
+r = requests.post(url, data=data)
+r_json = r.json()
+r_data = r_json["status"]
+
+print(r_json)
 
 
 
@@ -29,8 +32,8 @@ data = {
 	"password": "7777"
 }
 
-r = requests.post(url, data=data)
-print(r.status_code)
+#r = requests.post(url, data=data)
+#print(r.status_code)
 
 
 
