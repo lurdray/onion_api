@@ -14,10 +14,29 @@ from main.models import *
 def SignInView(request):
 
 	if request.method == "POST":
-		
 
-		return HttpResponseRedirect(reverse("admin:index"))
-		
+		username = request.POST.get("username")
+		password = request.POST.get("password")
+
+
+		user = authenticate(username=username, password=password)
+
+		if user:
+			if user.is_active and user.is_superuser:
+				login(request, user)
+				return HttpResponseRedirect(reverse("admin_app:index"))
+
+
+			else:
+				context = {"msg": "Sorry, you are not at admin."}
+				return render(request, "admin_app/sign_in.html", context)
+
+		else:
+			context = {"msg": "Sorry, invalid logins."}
+			return render(request, "admin_app/sign_in.html", context)
+
+
+				
 	else:
 
 		context = {}
@@ -29,11 +48,9 @@ def SignInView(request):
 def SignOutView(request):
 	logout(request)
 
-	return HttpResponseRedirect(reverse("admin_app:index"))
+	return HttpResponseRedirect(reverse("admin_app:sign_in"))
 
 		
-
-
 
 
 def IndexView(request):
@@ -44,31 +61,40 @@ def IndexView(request):
 		
 	else:
 
-		app_users = AppUser.objects.all()
-		problems = Problem.objects.all()
-		solutions = Solution.objects.all()
-		approved_solutions = Solution.objects.filter(status=True)
+		try:
+			user = User.objects.get(pk=request.user.id)
+			if user.is_superuser:
 
-		latest_problems = problems[:10]
-		latest_users = app_users[:10]
-		latest_solution_video = solutions[:10]
+				app_users = AppUser.objects.all()
+				problems = Problem.objects.all()
+				solutions = Solution.objects.all()
+				approved_solutions = Solution.objects.filter(status=True)
 
-
-		context = {
-			"app_users": app_users,
-			"problems": problems,
-			"solutions": solutions,
-			"approved_solutions": approved_solutions,
-
-			"latest_problems": latest_problems,
-			"latest_users": latest_users,
-			"latest_solution_video": latest_solution_video,
-
-		}
-
-		return render(request, "admin_app/index.html", context)
+				latest_problems = problems[:10]
+				latest_users = app_users[:10]
+				latest_solution_video = solutions[:10]
 
 
+				context = {
+					"app_users": app_users,
+					"problems": problems,
+					"solutions": solutions,
+					"approved_solutions": approved_solutions,
+
+					"latest_problems": latest_problems,
+					"latest_users": latest_users,
+					"latest_solution_video": latest_solution_video,
+
+				}
+
+				return render(request, "admin_app/index.html", context)
+
+
+			else:
+				return HttpResponseRedirect(reverse("admin_app:sign_out"))
+
+		except:
+			return HttpResponseRedirect(reverse("admin_app:sign_out"))
 
 
 def AllProblemsView(request):
@@ -86,6 +112,83 @@ def AllProblemsView(request):
 		}
 
 		return render(request, "admin_app/all_problems.html", context)
+
+
+
+
+def ReportedVideosView(request):
+
+	if request.method == "POST":
+		pass
+
+		
+	else:
+
+		problems = Problem.objects.all().order_by("-pub_date")
+		solutions = Solution.objects.all().order_by("-pub_date")
+
+		reported_p_videos = []
+		reported_s_videos = []
+
+		for item in problems:
+			if item.report_count > 0:
+				reported_p_videos.append(item)
+
+		for item in solutions:
+			if item.report_count > 0:
+				reported_s_videos.append(item)
+
+
+		
+
+		context = {
+		"reported_p_videos": reported_p_videos,
+		"reported_s_videos": reported_s_videos
+
+		}
+
+		return render(request, "admin_app/reported_videos.html", context)
+
+
+def ReportPDetailView(request, problem_id):
+
+	if request.method == "POST":
+		pass
+
+		
+	else:
+		problem = Problem.objects.get(id=problem_id)
+		reports = problem.reports.all()
+
+		context = {
+			"problem": problem, 
+			"reports": reports,
+			}
+
+		return render(request, "admin_app/report_p_detail.html", context)
+
+
+
+def ReportSDetailView(request, solution_id):
+
+	if request.method == "POST":
+		pass
+
+		
+	else:
+		solution = Solution.objects.get(id=solution_id)
+		reports = solution.reports.all()
+
+		context = {
+			"solution": solution, 
+			"reports": reports,
+			}
+
+		return render(request, "admin_app/report_s_detail.html", context)
+
+
+
+
 
 
 def ProblemDetailView(request, problem_id):

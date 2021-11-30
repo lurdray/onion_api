@@ -14,13 +14,79 @@ from django.contrib.auth.models import User
 
 import random
 import string
+import os
+
+from django.utils import timezone
+import datetime
 
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+from django.db.models import Q
 
 
+def RemoveVideoFunc():
+
+    try:
+        from datetime import datetime
+
+        all_problems = Problem.objects.all()
+
+        for item in all_problems:
+
+            switch_date = item.switch_date
+            today_date = datetime.now()
+
+            switch_date = int(str(switch_date)[:4]) + (int(str(switch_date)[5:7])*10) + int(str(switch_date)[8:10])
+            today_date = int(str(today_date)[:4]) + (int(str(today_date)[5:7])*10) + int(str(today_date)[8:10])
+       
+            if today_date > switch_date or today_date == switch_date:
+
+                problem = Problem.objects.get(id=item.id)
+
+                
+                try:
+                    if os.path.exists(problem.video.path):
+                        os.remove(problem.video.path)
+
+                        #problem.video.path = "pp_files/videos/default_files/default.mp4"
+                        #problem.save()
+
+                except:
+                    pass
+
+                problem.status = False
+                problem.save()
+
+
+
+                all_solutions = Solution.objects.filter(problem__id=problem.id)
+
+                for item2 in all_solutions:
+
+                    try:
+                        if os.path.exists(item2.video.path):
+                            os.remove(item2.video.path)
+
+                    except:
+                        pass
+
+                    item2.status = False
+                    item2.save()
+
+
+            else:
+                output = str(today_date) +" " +str(switch_date)
+                print(output)
+
+    except:
+        pass
+
+
+
+
+RemoveVideoFunc()
 
 def ray_randomiser(length=12):
     landd = string.ascii_letters + string.digits
@@ -49,7 +115,6 @@ def RaySendMail(request, subject, message, to_email, code=None):
 
 @api_view(['POST'])
 def SignUpView(request):
-
     if request.method == 'POST':
 
         request.session.create()
@@ -60,28 +125,46 @@ def SignUpView(request):
         email =request.data["email"]
         password = request.data["password"]
 
-        user = User(username=email)
-        user.set_password(password)
-        user.save()
+        try:
 
-        app_user = AppUser.objects.create(user=user, auth_code=auth_code, first_name=first_name, last_name=last_name, email=email)
+            user = User(username=email)
+            user.set_password(password)
+            user.save()
 
-        request_code = ray_randomiser()
-        app_user.request_code = request_code
-        app_user.save()
+            app_user = AppUser.objects.create(user=user, auth_code=auth_code, first_name=first_name, last_name=last_name, email=email)
 
-        #RaySendMail(request, "Authentication", "Welcome to Onionng.com, Please use the authentication code below to complete your sign up!", app_user.user.username, code=request_code)
+            request_code = ray_randomiser()
+            app_user.request_code = request_code
+            app_user.save()
+
+            #RaySendMail(request, "Authentication", "Welcome to Onionng.com, Please use the authentication code below to complete your sign up!", app_user.user.username, code=request_code)
 
 
-        data = {"status": "sign up successful"}
+            data = {"status": "sign up successful"}
 
-        serializer = StatusSerializer(data=data)
+            serializer = StatusSerializer(data=data)
 
-        if serializer.is_valid():
-            #serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+        except:
+
+            data = {"status": "Error, email address already used."}
+
+            serializer = StatusSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 
@@ -89,19 +172,24 @@ def SignUpView(request):
 def SignInView(request):
     if request.method == 'POST':
 
+        RemoveVideoFunc()
+
         email = request.data["email"]
         password = request.data["password"]
 
         user = authenticate(username=email, password=password)
-
-        if user:
+        
+        try:
             if user.is_active:
                 login(request, user)
 
             app_user = AppUser.objects.get(user__pk=request.user.id)
             data = {
-                "status": "sign in successful",
+                "status": True,
+                "message": "Sign In Successful",
                 "auth_code": app_user.auth_code,
+                "first_name": app_user.first_name,
+                "last_name": app_user.last_name,
             }
 
             serializer = SignInStatusSerializer(data=data)
@@ -113,26 +201,76 @@ def SignInView(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-        else:
-            return Response(status.HTTP_400_BAD_REQUEST)
-            #return HttpResponse(str("errors!"))
 
+        except:
+            data = {
+                "status": False,
+                "message": "Error, incorrect username or password.",
+                "auth_code": "None",
+                "first_name": "None",
+                "last_name": "None",
+            }
+
+            serializer = SignInStatusSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['GET'])
+def ACGetAppUserView(request, auth_code):
+    app_user = AppUser.objects.get(auth_code=auth_code)
+    if request.method == 'GET':
+
+        RemoveVideoFunc()
+
+        data = {
+                "status": app_user.status,
+                "profile_photo": app_user.profile_photo.url,
+                "first_name": app_user.first_name,
+                "last_name": app_user.last_name,
+                "email": app_user.user.username,
+            }
+
+        serializer = AppUserSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
 
 
 @api_view(['GET'])
-def GetAppUserView(request, auth_code):
-    app_user = AppUser.objects.filter(auth_code=auth_code)
+def IDGetAppUserView(request, app_user_id):
+    app_user = AppUser.objects.get(id=app_user_id)
     if request.method == 'GET':
 
-        serializer = AppUserSerializer(app_user, many=True)
-        if serializer:
-            return Response(serializer.data)
+        RemoveVideoFunc()
 
-        else:
-            return HttpResponse(str("errors!"))
+        data = {
+                "status": app_user.status,
+                "profile_photo": app_user.profile_photo.url,
+                "first_name": app_user.first_name,
+                "last_name": app_user.last_name,
+                "email": app_user.user.username,
+            }
+
+        serializer = AppUserSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -145,15 +283,23 @@ def GetAppUserView(request, auth_code):
 def AddProblemView(request):
 
     if request.method == 'POST':
-
         auth_code =request.data["auth_code"]
         title =request.data["title"]
         video = request.FILES["video"]
         detail = request.data["detail"]
 
         category =request.data["category"]
-        
-        
+        duration =request.data["duration"]
+
+        if duration == "24hrs":
+            days = 1
+
+        elif duration == "48hrs":
+            days = 2
+
+        else:
+            days = 3
+
         try:
             tag1 =request.data["tag1"]
         except:
@@ -181,7 +327,7 @@ def AddProblemView(request):
 
         app_user = AppUser.objects.get(auth_code=auth_code)
 
-        problem = Problem.objects.create(app_user=app_user, title=title, detail=detail, category=category)
+        problem = Problem.objects.create(app_user=app_user, auth_code=app_user.auth_code, app_user_name1=app_user.first_name, app_user_name2=app_user.last_name, profile_photo=app_user.profile_photo, title=title, detail=detail, category=category)
         
         if tag1:
             problem.tag1 = tag1
@@ -193,7 +339,12 @@ def AddProblemView(request):
             problem.tag4 = tag4
         if tag5:
             problem.tag5 = tag5
-            
+
+        today = timezone.now().date()
+        nextD = today + datetime.timedelta(days=days)
+
+        problem.switch_date = nextD
+
         problem.video = video
         problem.save()
 
@@ -287,38 +438,90 @@ def EditProblemView(request):
 
 @api_view(['POST'])
 def EditAppUserView(request):
-    print(request.session.session_key)
+    #print(request.session.session_key)
 
     if request.method == 'POST':
 
-        auth_code =request.data["auth_code"]
+        try:
+            auth_code =request.data["auth_code"]
 
-        first_name =request.data["first_name"]
-        last_name =request.data["last_name"]
+            try:
+                profile_photo = request.FILES["profile_photo"]
 
-        password =request.data["password"]
+            except:
+                profile_photo = None
+
+            first_name =request.data["first_name"]
+            last_name =request.data["last_name"]
+            interest =request.data["interest"]
+
+            try:
+                password =request.data["password"]
+
+            except:
+                password = None
 
 
-        app_user = AppUser.objects.get(auth_code=auth_code)
+            app_user = AppUser.objects.get(auth_code=auth_code)
+            
+            if password != None:
 
-        user = User.objects.get(username=app_user.email)
-        user.set_password(password)
-        user.save()
+                user = User.objects.get(username=app_user.email)
+                user.set_password(password)
+                user.save()
 
-        app_user.first_name = first_name
-        app_user.last_name = last_name
+            app_user.first_name = first_name
+            app_user.last_name = last_name
+            app_user.interest = interest
+            
+            if profile_photo != None:
+                app_user.profile_photo = profile_photo
 
-        app_user.save()
+            app_user.save()
 
-        data = {"status": "User edited successfully"}
+            comments = Comment.objects.filter(app_user__id=app_user.id)
+            for item in comments:
+                item.first_name = app_user.first_name
+                item.last_name = app_user.last_name
+                item.profile_photo = app_user.profile_photo
+                item.save()
 
-        serializer = StatusSerializer(data=data)
 
-        if serializer.is_valid():
-            #serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            solutions = Solution.objects.filter(app_user__id=app_user.id)
+            for item in solutions:
+                item.app_user_name1 = app_user.first_name
+                item.app_user_name2 = app_user.last_name
+                item.profile_photo = app_user.profile_photo
+                item.save()
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            problems = Problem.objects.filter(app_user__id=app_user.id)
+            for item in problems:
+                item.app_user_name1 = app_user.first_name
+                item.app_user_name2 = app_user.last_name
+                item.profile_photo = app_user.profile_photo
+                item.save()
+
+            data = {"status": "User profile edited successfully", "status_lean": True}
+
+            serializer = EditUserStatusSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except:
+            data = {"status": "Sorry, profile did not edit successfully", "status_lean": False}
+
+            serializer = EditUserStatusSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
         
@@ -339,7 +542,7 @@ def AddSolutionView(request):
         app_user = AppUser.objects.get(auth_code=auth_code)
 
         problem = Problem.objects.get(id=problem_id)
-        solution = Solution.objects.create(app_user=app_user, problem=problem, title=title, detail=detail)
+        solution = Solution.objects.create(app_user=app_user, auth_code=app_user.auth_code, app_user_name1=app_user.first_name, app_user_name2=app_user.last_name, profile_photo=app_user.profile_photo, problem=problem, title=title, detail=detail)
         solution.video = video
         solution.save()
 
@@ -357,10 +560,73 @@ def AddSolutionView(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['POST'])
+def AddSCommentView(request):
+    
+    if request.method == 'POST':
+        
+        auth_code =request.data["auth_code"]
+        comment =request.data["comment"]
+        solution_id =request.data["solution_id"]
+        
+        app_user = AppUser.objects.get(auth_code=auth_code)
+        solution = Solution.objects.get(id=solution_id)
+        
+        comment = Comment.objects.create(app_user=app_user, profile_photo=app_user.profile_photo, first_name=app_user.first_name, last_name=app_user.last_name, comment=comment)
+        comment.save()
+        sc = SolutionCommentConnector(solution=solution, comment=comment)
+        sc.save()
+        
+        solution.comment_count += 1
+        solution.save()
+        
+        data = {
+            "status": "Comment added successfully",
+        }
+        
+        serializer = StatusSerializer(data=data)
+        if serializer.is_valid():
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+@api_view(['POST'])
+def AddPCommentView(request):
+    
+    if request.method == 'POST':
+        
+        auth_code =request.data["auth_code"]
+        comment =request.data["comment"]
+        problem_id =request.data["problem_id"]
+        
+        app_user = AppUser.objects.get(auth_code=auth_code)
+        problem = Problem.objects.get(id=problem_id)
+        
+        comment = Comment.objects.create(app_user=app_user, profile_photo=app_user.profile_photo, first_name=app_user.first_name, last_name=app_user.last_name, comment=comment)
+        comment.save()
+        pc = ProblemCommentConnector(problem=problem, comment=comment)
+        pc.save()
+        
+        problem.comment_count += 1
+        problem.save()
+        
+        data = {
+            "status": "Comment added successfully",
+        }
+        
+        serializer = StatusSerializer(data=data)
+        if serializer.is_valid():
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
 
 @api_view(['GET'])
-def GetUserProblemsView(request, app_user_id):
-    app_user = AppUser.objects.get(id=app_user_id)
+def GetUserProblemsView(request, auth_code):
+    app_user = AppUser.objects.get(auth_code=auth_code)
     if request.method == 'GET':
         problems = Problem.objects.filter(app_user=app_user)
 
@@ -374,8 +640,8 @@ def GetUserProblemsView(request, app_user_id):
 
 
 @api_view(['GET'])
-def GetUserSolutionsView(request, app_user_id):
-    app_user = AppUser.objects.get(id=app_user_id)
+def GetUserSolutionsView(request, auth_code):
+    app_user = AppUser.objects.get(auth_code=auth_code)
     if request.method == 'GET':
         solutions = Solution.objects.filter(app_user=app_user)
 
@@ -393,7 +659,7 @@ def GetUserSolutionsView(request, app_user_id):
 def GetProblemSolutionsView(request, problem_id):
     problem = Problem.objects.get(id=problem_id)
     if request.method == 'GET':
-        solutions = Solution.objects.filter(problem=problem)
+        solutions = Solution.objects.filter(problem=problem).order_by('-pub_date')
 
         serializer = SolutionSerializer(solutions, many=True)
         if serializer:
@@ -408,7 +674,10 @@ def GetProblemSolutionsView(request, problem_id):
 @api_view(['GET'])
 def GetAllProblemsView(request):
     if request.method == 'GET':
-        problems = Problem.objects.all()
+
+        RemoveVideoFunc()
+
+        problems = Problem.objects.all().order_by('-pub_date')
 
         serializer = ProblemSerializer(problems, many=True)
         if serializer:
@@ -417,12 +686,93 @@ def GetAllProblemsView(request):
         else:
             return HttpResponse(str("errors!"))
 
+@api_view(['GET'])
+def GetProblemDetailView(request, auth_code, problem_id):
+    if request.method == 'GET':
+
+        RemoveVideoFunc()
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+        problem = Problem.objects.filter(id=problem_id)
+
+        problem_k = Problem.objects.get(id=problem_id)
+        view_status = False
+        for item in problem_k.views.all():
+            if item.app_user.id == app_user.id:
+                view_status = True
+                
+        if view_status == False:
+            view = View.objects.create(app_user=app_user)
+            pv = ProblemViewConnector(problem=problem_k, view=view)
+            pv.save()
+
+            problem_k.view_count += 1
+            problem_k.save()
+
+        views = problem_k.views.all()
+        viewed_users = []
+        for item in views:
+            viewed_users.append(item.app_user.auth_code)
+
+
+        claps = problem_k.claps.all()
+        clapped_users = []
+        for item in claps:
+            clapped_users.append(item.app_user.auth_code)
+
+
+        buzzers = problem_k.buzzers.all()
+        buzzed_users = []
+        for item in buzzers:
+            buzzed_users.append(item.app_user.auth_code)
+
+
+
+
+
+        serializer = ProblemSerializer(problem, many=True)
+        serializer_data = serializer.data + [{"viewed_users:": viewed_users}, {"buzzed_users:": buzzed_users}, {"clapped_users:": clapped_users}]
+        if serializer:
+            return Response(serializer_data)
+
+        else:
+            return HttpResponse(str("errors!"))
+            
+@api_view(['GET'])
+def GetPCommentView(request, problem_id):
+    if request.method == 'GET':
+        problem = Problem.objects.get(id=problem_id)
+        comments = problem.comments.all()
+
+        serializer = CommentSerializer(comments, many=True)
+        if serializer:
+            return Response(serializer.data)
+
+        else:
+            return HttpResponse(str("errors!"))
+    
+    
+@api_view(['GET'])
+def GetSCommentView(request, solution_id):
+    if request.method == 'GET':
+        solution = Solution.objects.get(id=solution_id)
+        comments = solution.comments.all()
+
+        serializer = CommentSerializer(comments, many=True)
+        if serializer:
+            return Response(serializer.data)
+
+        else:
+            return HttpResponse(str("errors!"))
 
 
 @api_view(['GET'])
 def GetAllSolutionsView(request):
     if request.method == 'GET':
-        solutions = Solution.objects.all()
+
+        RemoveVideoFunc()
+
+        solutions = Solution.objects.all().order_by('-pub_date')
 
         serializer = SolutionSerializer(solutions, many=True)
         if serializer:
@@ -432,6 +782,57 @@ def GetAllSolutionsView(request):
             return HttpResponse(str("errors!"))
 
 
+
+@api_view(['GET'])
+def GetSolutionDetailView(request, auth_code, solution_id):
+    if request.method == 'GET':
+
+        RemoveVideoFunc()
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+        solution = Solution.objects.filter(id=solution_id)
+
+        solution_k = Solution.objects.get(id=solution_id)
+
+        view_status = False
+        for item in solution_k.views.all():
+            if item.app_user.id == app_user.id:
+                view_status = True
+                
+        if view_status == False:
+            view = View.objects.create(app_user=app_user)
+            sv = SolutionViewConnector(solution=solution_k, view=view)
+            sv.save()
+
+            solution_k.view_count += 1
+            solution_k.save()
+
+        views = solution_k.views.all()
+        viewed_users = []
+        for item in views:
+            viewed_users.append(item.app_user.auth_code)
+
+
+        claps = solution_k.claps.all()
+        clapped_users = []
+        for item in claps:
+            clapped_users.append(item.app_user.auth_code)
+
+
+        buzzers = solution_k.buzzers.all()
+        buzzed_users = []
+        for item in buzzers:
+            buzzed_users.append(item.app_user.auth_code)
+
+
+        serializer = SolutionSerializer(solution, many=True)
+        serializer_data = serializer.data + [{"viewed_users:": viewed_users}, {"buzzed_users:": buzzed_users}, {"clapped_users:": clapped_users}]
+
+        if serializer:
+            return Response(serializer_data)
+
+        else:
+            return HttpResponse(str("errors!"))
 
 
 @api_view(['POST'])
@@ -445,20 +846,44 @@ def AddProblemClapView(request):
         app_user = AppUser.objects.get(auth_code=auth_code)
 
         problem = Problem.objects.get(id=problem_id)
-        clap = Clap.objects.create(app_user=app_user)
 
-        pc = ProblemClapConnector(problem=problem, clap=clap)
-        pc.save()
+        hand_status = False
+        for clap in problem.claps.all():
+            if clap.app_user.id == app_user.id:
+                hand_status = True
+                
+        if hand_status == True:
+            data = {"status": "Sorry, you clapped already", "status_lean": False}
 
-        data = {"status": "Clap added successfully"}
+            serializer = StatusCBSerializer(data=data)
 
-        serializer = StatusSerializer(data=data)
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if serializer.is_valid():
-            #serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+        else:
+
+            clap = Clap.objects.create(app_user=app_user)
+
+            pc = ProblemClapConnector(problem=problem, clap=clap)
+            pc.save()
+            
+            problem.clap_count = problem.claps.count()
+            problem.save()
+
+            data = {"status": "Clap added successfully", "status_lean": True}
+
+            serializer = StatusCBSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -473,20 +898,45 @@ def AddProblemBuzzView(request):
         app_user = AppUser.objects.get(auth_code=auth_code)
 
         problem = Problem.objects.get(id=problem_id)
-        buzzer = Buzzer.objects.create(app_user=app_user)
 
-        pb = ProblemBuzzerConnector(problem=problem, buzzer=buzzer)
-        pb.save()
+        hand_status = False
+        for buzz in problem.buzzers.all():
+            if buzz.app_user.id == app_user.id:
+                hand_status = True
+                
+        if hand_status == True:
+            data = {"status": "Sorry, you buzzed already.", "status_lean": False}
 
-        data = {"status": "Buzz added successfully"}
+            serializer = StatusCBSerializer(data=data)
 
-        serializer = StatusSerializer(data=data)
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if serializer.is_valid():
-            #serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+        else:
+
+
+            buzzer = Buzzer.objects.create(app_user=app_user)
+
+            pb = ProblemBuzzerConnector(problem=problem, buzzer=buzzer)
+            pb.save()
+            
+            problem.buzzer_count = problem.buzzers.count()
+            problem.save()
+
+            data = {"status": "Buzz added successfully", "status_lean": True}
+
+            serializer = StatusCBSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -503,20 +953,44 @@ def AddSolutionClapView(request):
         app_user = AppUser.objects.get(auth_code=auth_code)
 
         solution = Solution.objects.get(id=solution_id)
-        clap = Clap.objects.create(app_user=app_user)
 
-        sc = SolutionClapConnector(solution=solution, clap=clap)
-        sc.save()
+        hand_status = False
+        for clap in solution.claps.all():
+            if clap.app_user.id == app_user.id:
+                hand_status = True
+                
+        if hand_status == True:
+            data = {"status": "Sorry, you clapped already.", "status_lean": False}
 
-        data = {"status": "Clap added successfully"}
+            serializer = StatusCBSerializer(data=data)
 
-        serializer = StatusSerializer(data=data)
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if serializer.is_valid():
-            #serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+        else:
+
+            clap = Clap.objects.create(app_user=app_user)
+
+            sc = SolutionClapConnector(solution=solution, clap=clap)
+            sc.save()
+            
+            solution.clap_count = solution.claps.count()
+            solution.save()
+
+            data = {"status": "Clap added successfully", "status_lean": True}
+
+            serializer = StatusCBSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -531,12 +1005,63 @@ def AddSolutionBuzzView(request):
         app_user = AppUser.objects.get(auth_code=auth_code)
 
         solution = Solution.objects.get(id=solution_id)
-        buzzer = Buzzer.objects.create(app_user=app_user)
 
-        sb = SolutionBuzzerConnector(solution=solution, buzzer=buzzer)
-        sb.save()
+        hand_status = False
+        for buzz in solution.buzzers.all():
+            if buzz.app_user.id == app_user.id:
+                hand_status = True
+                
+        if hand_status == True:
+            data = {"status": "Sorry, you buzzed already.", "status_lean": False}
 
-        data = {"status": "Buzz added successfully"}
+            serializer = StatusCBSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+        else:
+
+            buzzer = Buzzer.objects.create(app_user=app_user)
+
+            sb = SolutionBuzzerConnector(solution=solution, buzzer=buzzer)
+            sb.save()
+            
+            solution.buzzer_count = solution.buzzers.count()
+            solution.save()
+            
+            data = {"status": "Buzz added successfully", "status_lean": True}
+
+            serializer = StatusCBSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['POST'])
+def RateProblemView(request):
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        rating = request.data["rating"]
+        problem_id = request.data["problem_id"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        problem = Problem.objects.get(id=problem_id)
+        problem.rating = int(rating)
+        problem.save()
+
+        data = {"status": "Rating added successfully"}
 
         serializer = StatusSerializer(data=data)
 
@@ -545,6 +1070,9 @@ def AddSolutionBuzzView(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 
 
@@ -680,20 +1208,654 @@ def ActivateUserView(request):
 
 
 
+@api_view(['POST'])
+def SetPaymentView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+
+        app_user.payment_status = True
+        app_user.save()
+
+        data = {"status": "Payment status set successfully"}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+def GetAllTagView(request):
+
+    if request.method == 'GET':
+
+        problems = Problem.objects.all()
+
+        tags = set()
+
+        for item in problems:
+            tags.add(item.tag1)
+            tags.add(item.tag2)
+            tags.add(item.tag3)
+            tags.add(item.tag4)
+            tags.add(item.tag5)
+
+        data = {"status": True, "tags": tags}
+
+        return Response(data)
+
+
+
+@api_view(['GET'])
+def GetAllCategoriesView(request):
+
+    if request.method == 'GET':
+
+        RemoveVideoFunc()
+
+        problems = Problem.objects.all()
+
+        categories = set()
+
+        for item in problems:
+            categories.add(item.category)
+
+        data = {"status": True, "categories": categories}
+
+        return Response(data)
+
+
+@api_view(['POST'])
+def ReportProblemView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        problem_id =request.data["problem_id"]
+        reason =request.data["reason"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+        problem = Problem.objects.get(id=problem_id)
+
+        report = Report(app_user=app_user, reason=reason)
+        report.save()
+
+        pr = ProblemReportConnector(problem=problem, report=report)
+        pr.save()
+
+        problem.report_count += 1
+        problem.save()
+
+        data = {"status": "Video Reported Successfully."}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['POST'])
+def ReportSolutionView(request):
+
+    if request.method == 'POST':
+
+        auth_code =request.data["auth_code"]
+        solution_id =request.data["solution_id"]
+        reason =request.data["reason"]
+
+        app_user = AppUser.objects.get(auth_code=auth_code)
+        solution = Solution.objects.get(id=solution_id)
+
+        report = Report(app_user=app_user, reason=reason)
+        report.save()
+
+        sr = SolutionReportConnector(solution=solution, report=report)
+        sr.save()
+
+        solution.report_count += 1
+        solution.save()
+
+        data = {"status": "Video Reported Successfully."}
+
+        serializer = StatusSerializer(data=data)
+
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['POST'])
+def FindAllProblemsTView(request):
+
+    if request.method == 'POST':
+        tag = request.data["tag"]
+
+        problems = Problem.objects.filter(Q(tag1=tag) | Q(tag2=tag) | Q(tag3=tag) | Q(tag4=tag) | Q(tag5=tag)).order_by('-pub_date')
+
+        serializer = ProblemSerializer(problems, many=True)
+        if serializer:
+            return Response(serializer.data)
+
+        else:
+            return HttpResponse(str("errors!"))
+
+
+@api_view(['POST'])
+def FindAllProblemsCView(request):
+    if request.method == 'POST':
+        category = request.data["category"]
+
+        problems = Problem.objects.filter(category=category).order_by('-pub_date')
+
+        serializer = ProblemSerializer(problems, many=True)
+        if serializer:
+            return Response(serializer.data)
+
+
+
+@api_view(['POST'])
+def FindAllProblemsTiView(request):
+    if request.method == 'POST':
+        title = request.data["title"]
+
+        problems = Problem.objects.filter(title=title).order_by('-pub_date')
+
+        serializer = ProblemSerializer(problems, many=True)
+        if serializer:
+            return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+def GetTimelineView(request):
+
+    if request.method == 'GET':
+
+        RemoveVideoFunc()
+
+        problems = Problem.objects.all()
+        solutions = Solution.objects.all()
+        timeline = []
+
+        for i in problems:
+
+            i_list = {}
+            i_list1 = []
+            top_solution = Solution.objects.filter(problem__id=i.id).order_by('-clap_count').first()
+
+            if top_solution:
+                top_solutions = Solution.objects.filter(problem__id=i.id, clap_count=top_solution.clap_count)
+
+                i_list = {
+
+                "problem_title": i.title,
+                "problem_detail": i.detail,
+                "problem_video": i.video.url,
+                
+                "problem_category": i.category,
+                "problem_tags": i.tag1 +"" +i.tag2 +"" +i.tag3 +"" +i.tag4 +"" +i.tag5,
+                "problem_views": i.view_count,
+
+                "problem_uploader_name1": i.app_user_name1,
+                "problem_uploader_name2": i.app_user_name2,
+                "problem_uploader_photo": i.profile_photo.url,
+
+                "solutions_count": top_solutions.count()
+
+                }
+
+
+                for item in top_solutions:
+
+
+                    i_list['solution%s' % (item.id)] = {
+
+                        "solution_title": item.title,
+                        "solution_video": item.video.url,
+                        "solution_views": item.view_count,
+                        "solution_claps": item.clap_count,
+                        "solution_buzzers": item.buzzer_count,
+
+                        "solution_uploader_name1": item.app_user_name1,
+                        "solution_uploader_name2": item.app_user_name2,
+                        "solution_uploader_photo": item.profile_photo.url,
+
+                        }
+
+                timeline.append(i_list)
+            
+            
+        data = {"timeline": timeline}
+
+        return Response(data)
 
 
 
 
 
+@api_view(['GET'])
+def AnalyticsVRView(request):
+
+    if request.method == 'GET':
+
+        highest_rated_solutions = []
+        lowest_rated_solutions = []
+
+        top_solution = Solution.objects.all().order_by('-rating').first()
+
+        if top_solution:
+            all_top_solutions = Solution.objects.filter(view_count=top_solution.rating)
+
+            for item in all_top_solutions:
+                item_list = {
+                    "title": item.title,
+                    "video": item.video.url,
+                    "views": item.view_count,
+                    "claps": item.clap_count,
+                    "buzzers": item.buzzer_count,
+
+                    "first_name": item.app_user_name1,
+                    "last_name": item.app_user_name2,
+                    "profile_photo": item.profile_photo.url,
+
+                }
+
+
+                highest_rated_solutions.append(item_list)
+
+
+        top_solution = Solution.objects.all().order_by('-rating').last()
+        if top_solution:    
+            all_top_solutions = Solution.objects.filter(view_count=top_solution.rating)
+
+            for item in all_top_solutions:
+                item_list = {
+                    "title": item.title,
+                    "video": item.video.url,
+                    "views": item.view_count,
+                    "claps": item.clap_count,
+                    "buzzers": item.buzzer_count,
+
+                    "first_name": item.app_user_name1,
+                    "last_name": item.app_user_name2,
+                    "profile_photo": item.profile_photo.url,
+
+                }
+
+
+                lowest_rated_solutions.append(item_list)
+        
+
+        result = {
+
+            "highest_rated_soltuions": highest_rated_solutions, 
+            "lowest_rated_solutions": lowest_rated_solutions,
+
+            }
+
+
+        data = {"result": result}
+
+        return Response(data)
+
+
+@api_view(['GET'])
+def AnalyticsVView(request):
+    if request.method == 'GET':
+
+        highest_viewed_problems = []
+        lowest_viewed_problems = []
+        highest_viewed_solutions = []
+        lowest_viewed_solutions = []
+
+        top_problem = Problem.objects.all().order_by('-view_count').first()
+
+        if top_problem:
+            all_top_problems = Problem.objects.filter(view_count=top_problem.view_count)
+
+            for item in all_top_problems:
+                item_list = {
+
+                    "problem_title": item.title,
+                    "problem_detail": item.detail,
+                    "problem_video": item.video.url,
+                    "problem_category": item.category,
+                    "problem_tags": item.tag1 +"" +item.tag2 +"" +item.tag3 +"" +item.tag4 +"" +item.tag5,
+                    "problem_views": item.view_count,
+
+                    "problem_uploader_name1": item.app_user_name1,
+                    "problem_uploader_name2": item.app_user_name2,
+                    "problem_uploader_photo": item.profile_photo.url,
+
+                }
+
+                highest_viewed_problems.append(item_list)
+
+
+        bottom_problem = Problem.objects.all().order_by('view_count').first()
+        if bottom_problem:
+            all_bottom_problems = Problem.objects.filter(view_count=bottom_problem.view_count)
+
+            for item in all_bottom_problems:
+                item_list = {
+
+                    "problem_title": item.title,
+                    "problem_detail": item.detail,
+                    "problem_video": item.video.url,
+                    "problem_category": item.category,
+                    "problem_tags": item.tag1 +"" +item.tag2 +"" +item.tag3 +"" +item.tag4 +"" +item.tag5,
+                    "problem_views": item.view_count,
+
+                    "problem_uploader_name1": item.app_user_name1,
+                    "problem_uploader_name2": item.app_user_name2,
+                    "problem_uploader_photo": item.profile_photo.url,
+
+                }
+
+                lowest_viewed_problems.append(item_list)
+
+
+
+        top_solution = Solution.objects.all().order_by('-view_count').first()
+        if top_solution:
+            all_top_solutions = Solution.objects.filter(view_count=top_solution.view_count)
+
+            for item in all_top_solutions:
+                item_list = {
+                    "title": item.title,
+                    "video": item.video.url,
+                    "views": item.view_count,
+                    "claps": item.clap_count,
+                    "buzzers": item.buzzer_count,
+
+                    "first_name": item.app_user_name1,
+                    "last_name": item.app_user_name2,
+                    "profile_photo": item.profile_photo.url,
+
+                }
+
+                highest_viewed_solutions.append(item_list)
+
+
+        bottom_solution = Solution.objects.all().order_by('view_count').first()
+        if bottom_solution:
+            all_bottom_solution = Solution.objects.filter(view_count=bottom_solution.view_count)
+
+            for item in all_bottom_solution:
+                item_list = {
+                    "title": item.title,
+                    "video": item.video.url,
+                    "views": item.view_count,
+                    "claps": item.clap_count,
+                    "buzzers": item.buzzer_count,
+
+                    "first_name": item.app_user_name1,
+                    "last_name": item.app_user_name2,
+                    "profile_photo": item.profile_photo.url,
+
+                }
+
+
+                lowest_viewed_solutions.append(item_list)
 
 
 
 
+        
+
+        result = {
+
+            "highest_viewed_problems": highest_viewed_problems, 
+            "lowest_viewed_problems": lowest_viewed_problems,
+
+            "highest_viewed_solutions": highest_viewed_solutions, 
+            "lowest_viewed_solutions": lowest_viewed_solutions,
+
+            }
+
+
+        data = {"result": result}
+
+        return Response(data)
+
+
+@api_view(['GET'])
+def AnalyticsTVView(request):
+    total_problems = Problem.objects.all().count()
+    total_solutions = Solution.objects.all().count()
+
+    result = {
+
+            "total_problems": total_problems, 
+            "total_solutions": total_solutions,
+
+        }
+
+
+    data = {"result": result}
+
+    return Response(data)
+
+
+
+@api_view(['GET'])
+def AnalyticsUVRView(request, auth_code):
+    if request.method == 'GET':
+
+        highest_rated_solutions = []
+        lowest_rated_solutions = []
+
+        top_solution = Solution.objects.filter(auth_code=auth_code).order_by('-rating').first()
+        
+        if top_solution:
+            all_top_solutions = Solution.objects.filter(auth_code=auth_code, view_count=top_solution.rating)
+
+            for item in all_top_solutions:
+                item_list = {
+                    "title": item.title,
+                    "video": item.video.url,
+                    "views": item.view_count,
+                    "claps": item.clap_count,
+                    "buzzers": item.buzzer_count,
+
+                    "first_name": item.app_user_name1,
+                    "last_name": item.app_user_name2,
+                    "profile_photo": item.profile_photo.url,
+
+                }
+
+
+                highest_rated_solutions.append(item_list)
+
+
+        top_solution = Solution.objects.filter(auth_code=auth_code).order_by('-rating').last()
+        if top_solution:
+            all_top_solutions = Solution.objects.filter(auth_code=auth_code, view_count=top_solution.rating)
+
+            for item in all_top_solutions:
+                item_list = {
+                    "title": item.title,
+                    "video": item.video.url,
+                    "views": item.view_count,
+                    "claps": item.clap_count,
+                    "buzzers": item.buzzer_count,
+
+                    "first_name": item.app_user_name1,
+                    "last_name": item.app_user_name2,
+                    "profile_photo": item.profile_photo.url,
+
+                }
+
+
+                lowest_rated_solutions.append(item_list)
+        
+
+        result = {
+
+            "highest_rated_soltuions": highest_rated_solutions, 
+            "lowest_rated_solutions": lowest_rated_solutions,
+
+            }
+
+
+        data = {"result": result}
+
+        return Response(data)
+
+
+@api_view(['GET'])
+def AnalyticsUVView(request, auth_code):
+    if request.method == 'GET':
+
+        highest_viewed_problems = []
+        lowest_viewed_problems = []
+        highest_viewed_solutions = []
+        lowest_viewed_solutions = []
+
+        top_problem = Problem.objects.filter(auth_code=auth_code).order_by('-view_count').first()
+        
+        if top_problem:
+            all_top_problems = Problem.objects.filter(auth_code=auth_code, view_count=top_problem.view_count)
+
+            for item in all_top_problems:
+                item_list = {
+
+                    "problem_title": item.title,
+                    "problem_detail": item.detail,
+                    "problem_video": item.video.url,
+                    "problem_category": item.category,
+                    "problem_tags": item.tag1 +"" +item.tag2 +"" +item.tag3 +"" +item.tag4 +"" +item.tag5,
+                    "problem_views": item.view_count,
+
+                    "problem_uploader_name1": item.app_user_name1,
+                    "problem_uploader_name2": item.app_user_name2,
+                    "problem_uploader_photo": item.profile_photo.url,
+
+                }
+
+                highest_viewed_problems.append(item_list)
+
+
+        bottom_problem = Problem.objects.filter(auth_code=auth_code).order_by('view_count').first()
+            
+        if bottom_problem:    
+            all_bottom_problems = Problem.objects.filter(auth_code=auth_code, view_count=bottom_problem.view_count)
+
+            for item in all_bottom_problems:
+                item_list = {
+
+                    "problem_title": item.title,
+                    "problem_detail": item.detail,
+                    "problem_video": item.video.url,
+                    "problem_category": item.category,
+                    "problem_tags": item.tag1 +"" +item.tag2 +"" +item.tag3 +"" +item.tag4 +"" +item.tag5,
+                    "problem_views": item.view_count,
+
+                    "problem_uploader_name1": item.app_user_name1,
+                    "problem_uploader_name2": item.app_user_name2,
+                    "problem_uploader_photo": item.profile_photo.url,
+
+                }
+
+                lowest_viewed_problems.append(item_list)
+
+
+
+        top_solution = Solution.objects.filter(auth_code=auth_code).order_by('-view_count').first()
+        if top_solution:
+            all_top_solutions = Solution.objects.filter(auth_code=auth_code, view_count=top_solution.view_count)
+
+            for item in all_top_solutions:
+                item_list = {
+                    "title": item.title,
+                    "video": item.video.url,
+                    "views": item.view_count,
+                    "claps": item.clap_count,
+                    "buzzers": item.buzzer_count,
+
+                    "first_name": item.app_user_name1,
+                    "last_name": item.app_user_name2,
+                    "profile_photo": item.profile_photo.url,
+
+                }
+
+                highest_viewed_solutions.append(item_list)
+
+
+        bottom_solution = Solution.objects.filter(auth_code=auth_code).order_by('view_count').first()
+        if bottom_solution:
+            all_bottom_solution = Solution.objects.filter(auth_code=auth_code, view_count=bottom_solution.view_count)
+
+            for item in all_bottom_solution:
+                item_list = {
+                    "title": item.title,
+                    "video": item.video.url,
+                    "views": item.view_count,
+                    "claps": item.clap_count,
+                    "buzzers": item.buzzer_count,
+
+                    "first_name": item.app_user_name1,
+                    "last_name": item.app_user_name2,
+                    "profile_photo": item.profile_photo.url,
+
+                }
+
+                lowest_viewed_solutions.append(item_list)
 
 
 
 
+            
 
+        result = {
+
+            "highest_viewed_problems": highest_viewed_problems, 
+            "lowest_viewed_problems": lowest_viewed_problems,
+
+            "highest_viewed_solutions": highest_viewed_solutions, 
+            "lowest_viewed_solutions": lowest_viewed_solutions,
+
+            }
+
+
+        data = {"result": result}
+
+        return Response(data)
+
+
+@api_view(['GET'])
+def AnalyticsUTVView(request, auth_code):
+    total_problems = Problem.objects.filter(auth_code=auth_code).count()
+    total_solutions = Solution.objects.filter(auth_code=auth_code).count()
+
+    result = {
+
+            "total_problems": total_problems, 
+            "total_solutions": total_solutions,
+            
+        }
+
+
+    data = {"result": result}
+
+    return Response(data)
 
 
 

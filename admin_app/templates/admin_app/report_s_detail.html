@@ -1,0 +1,193 @@
+{% extends 'admin_app/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+<style>
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+</style>
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Problem Detail</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Problem Detail</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+
+
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+          <div class="col-12">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">{{ solution.title }}</h3>
+
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <br /><br />
+                <div class="row container">
+                    <div class="col-md-6 col-lg-6">
+                        <h3>Solution Status</h3>
+                        <label class="switch">
+                          <form action="/admin-app/approve-solution/{{ solution.id }}/" method="post" autocomplete="on">
+                            {% csrf_token %}
+                            <input onChange="this.form.submit()" name="status" type="checkbox" {% if solution.status %} checked {% endif %}>
+                            <span class="slider round"></span>
+                          </form>
+                        </label>
+                        <p>{{ solution.detail }}</p><hr>
+
+                        <br />
+                    </div>
+
+                    <div class="col-md-6 col-lg-6">
+                        <video style="border-radius: 5px;" width="100%" height="auto" controls controlsList="nodownload">
+                            {% if solution.video %}
+                              <source src="{{ solution.video.url }}" type="video/mp4">
+                              Your browser does not support the video tag.
+                            {% endif %}
+                        </video> 
+
+                    </div>
+
+
+                </div>
+                <br />
+                <div class="row container">
+                    <h3 class="container">Complains</h3>
+                </div>
+                <div class="row">
+                    <div class="card-body table-responsive p-0">
+                        {% if reports %}       
+                            <table class="table table-hover text-nowrap container">
+                              <thead>
+                                <tr>
+                                    <th>Published by</th>
+                                    <th>Date</th>
+                                    <th>Reason</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in reports %}
+                                    <tr>
+                                        <td>{{ item.app_user.first_name }} {{ item.app_user.last_name }}</td>
+                                        <td>{{ item.pub_date }}</td>
+                                        <td>
+                                            <small>{{ item.reason }}</small>
+                                        </td>
+
+                                        <td></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+
+                            <p>Sorry, No Solutions yet!</p>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+
+
+                    
+                </div>
+
+
+
+
+                <br /><br />
+
+
+
+
+
+                
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</div>
+
+{% endblock content %}

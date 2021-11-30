@@ -122,8 +122,10 @@ input:checked + .slider:before {
 
                     <div class="col-md-6 col-lg-6">
                         <video style="border-radius: 5px;" width="100%" height="auto" controls controlsList="nodownload">
-                          <source src="{{ problem.video.url }}" type="video/mp4">
-                          Your browser does not support the video tag.
+                            {% if problem.video %}
+                              <source src="{{ problem.video.url }}" type="video/mp4">
+                              Your browser does not support the video tag.
+                            {% endif %}
                         </video> 
 
                     </div>
@@ -161,8 +163,10 @@ input:checked + .slider:before {
 
                                         <td>
                                             <video style="border-radius: 5px;" width="50%" height="auto" controls controlsList="nodownload">
-                                              <source src="{{ item.video.url }}" type="video/mp4">
-                                              Your browser does not support the video tag.
+                                                {% if item.video %}
+                                                  <source src="{{ item.video.url }}" type="video/mp4">
+                                                  Your browser does not support the video tag.
+                                                {% endif %}
                                             </video> 
 
                                         </td>
