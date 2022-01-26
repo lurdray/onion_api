@@ -11,10 +11,17 @@ from django.urls import path, include
 urlpatterns = [
 
     #onion api
+    path('confirm-payment/', views.ConfirmPaymentView, name="confirm_payment"),
+
     path('', views.SignInView, name="sign_in"),
     path('sign-out/', views.SignOutView, name="sign_out"),
     
     path('index/', views.IndexView, name="index"),
+
+    path('all-categories/', views.AllCategoriesView, name="all_categories"),
+    path('category-detail/<int:category_id>/', views.CategoryDetailView, name="category_detail"),
+    path('delete/category/<int:category_id>/', views.DeleteCategoryView, name="delete_category"),
+
 
     path('all-problems/', views.AllProblemsView, name="all_problems"),
     path('problem-detail/<int:problem_id>/', views.ProblemDetailView, name="problem_detail"),

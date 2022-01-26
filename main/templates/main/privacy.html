@@ -1,0 +1,332 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    
+    <link rel="alternate icon" href="{% static 'main/assets/img/fav.png' %}">
+    <link rel="icon" type="image/svg+xml" href="{% static 'main/assets/img/fav.png' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keywords" content="ONIONS - A SOCIAL NETWORK FOR PROBLEM SOLVING."/>
+
+    <meta name="msapplication-TileColor" content="#da532c"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta property="og:title" content="ONIONS"/>
+    <meta name="twitter:title" content="ONIONS"/>
+
+    <meta name="twitter:description" content="ONIONS - A SOCIAL NETWORK FOR PROBLEM SOLVING.
+    "/>
+    <meta property="og:description" content="ONIONS - A SOCIAL NETWORK FOR PROBLEM SOLVING."/>
+
+    
+    <meta name="description" content="ONIONS - A SOCIAL NETWORK FOR PROBLEM SOLVING." content="IE=edge"/>
+
+    <title>ONIONS - A SOCIAL NETWORK FOR PROBLEM SOLVING.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'main/assets/img/fav.png' %}"/>
+    
+    <link rel="alternate icon" href="{% static 'main/assets/img/fav.png' %}">
+    <link rel="shortcut icon" href="{% static 'main/assets/img/fav.png' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'main/assets/img/fav.png' %}" type="image/x-icon">
+    <meta name="msapplication-TileColor" content="#da532c"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta property="og:title" content="ONIONS"/>
+    <meta name="twitter:title" content="ONIONS"/>
+    <link rel="stylesheet" href="{% static 'main/assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/newfont.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/owl.carousel.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/fontawesome-all.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/swiper.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/jquery.bxslider.min.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/jquery.mCustomScrollbar.min.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/odometer-theme-default.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/flaticon.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/dark-version.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/assets/css/smm.css' %}">
+</head>
+
+<body class="app-eight-home saas-classic dark-version" data-spy="scroll" data-target=".navigation-eight" data-offset="50">
+    <!-- preloader - start -->
+    <div id="preloader" class="ei-preloader"></div>
+    <div class="ei-up">
+        <a href="#" id="scrollup" class="ei-scrollup text-center"><i class="fas fa-angle-up"></i></a>
+    </div>
+    
+
+
+        <!-- Start of header section
+        ============================================= -->
+        <header id="header_main" class="saas_two_main_header">
+            <div class="container">
+                <div class="s_main_menu">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="brand_logo" style="height: 70px;">
+                                <a href="!#"><img style="margin-top: -74px;" width="200px" height="80px" src="https://www.helloonions.com/static/logo1.png" alt=""></a>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="main_menu_list clearfix float-right">
+                                <nav class="s2-main-navigation  clearfix ul-li">
+                                    <ul id="main-nav" class="navbar-nav text-capitalize clearfix">
+                                        <li><a href="#eight-banner">Home</a></li>
+                                        <li><a href="{% url 'main:privacy' %}">Privacy</a></li>
+                                        <li><a href="#ei-faq">FAQs</a></li>
+                                        <li><a href="#ei-screenshots">More</a> </li>
+                                        
+                                    </ul>
+                                </nav>
+                                <div style="background: linear-gradient(to right, #e90e8b, #8bc541);" class="saas_sign_up_btn text-center">
+                                    <a href="#!"> Get Started</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- //desktop menu -->
+                <div class="s2-mobile_menu relative-position">
+                    <div class="s2-mobile_menu_button s2-open_mobile_menu">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <div class="s2-mobile_menu_wrap">
+                        <div class="mobile_menu_overlay s2-open_mobile_menu"></div>
+                        <div class="s2-mobile_menu_content">
+                            <div class="s2-mobile_menu_close s2-open_mobile_menu">
+                                <i class="far fa-times-circle"></i>
+                            </div>
+                            <div class="m-brand-logo text-center" style="height: 70px;">
+                                <a href="!#"><img style="margin-top: -74px;" width="200px" height="100px" src="https://www.helloonions.com/static/logo1.png" alt=""></a>
+                            </div>
+                            <nav class="s2-mobile-main-navigation  clearfix ul-li">
+                             <ul id="m-main-nav" class="navbar-nav text-capitalize clearfix">
+                                <li><a href="#eight-banner">Home</a></li>
+                                <li><a href="{% url 'main:privacy' %}">Privacy</a></li>
+                                <li><a href="#ei-faq">FAQs</a></li>
+                                <li><a href="#ei-screenshots">More</a> </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End of header section
+        ============================================= -->
+
+
+    <!-- Start of Featured  section
+        ============================================= -->
+       <br /><br /><br /><br /><br /><br />
+       <div class="container" style="color: white;">
+    <h1>Privacy Policy</h1><br /><br />
+        
+        <h6 style="color: white;">
+            <h4 style="color: white;">Who we are</h4><br />
+
+            Our website address is: https://onionstothe.world and our Apps are on App and Playstore as onionstothe.world<br /><br />
+
+            <h4>Comments</h4><br />
+
+            When you use our application, you’re trusting us with your information. We understand this is a big responsibility and work hard to protect your information and put you in control.<br />
+
+            When you create an Onions Account, you provide us with personal information that includes your name, your photo on the profile page and a password. You can also migrate to Premium Subscription and choose to add a phone number or payment information to your account.<br />
+
+            We also aggregate the content you post on Onions and use them to help seek better information from people outside our community. We will be posting this content on relevant social media accounts that are verified by us as authentic.<br /><br />
+
+            Not all posted videos or comments will be shared with the community. We ensure only validated content (upon approval by our admin team) will be shared with the public.
+            <br /><br />
+
+            <h4>Media</h4><br />
+
+            If you upload videos on our App, you should avoid uploading videos longer than 1 minute length as such video will be rejected and not posted. Premium users can download all contents shared on our App for their use.<br /><br />
+            
+            <h4>Cookies</h4>
+
+            If you leave a comment on our site you may opt-in to saving your name, email address and website in cookies. These are for your convenience so that you do not have to fill in your details again when you leave another comment. These cookies will last for one year.<br /><br />
+
+            If you visit our login page, we will set a temporary cookie to determine if your browser accepts cookies. This cookie contains no personal data and is discarded when you close your browser.<br /><br />
+
+            When you log in, we will also set up several cookies to save your login information and your screen display choices. Login cookies last for two days, and screen options cookies last for a year. If you select “Remember Me”, your login will persist for two weeks. If you log out of your account, the login cookies will be removed.<br /><br />
+
+            If you edit or publish an article, an additional cookie will be saved in your browser. This cookie includes no personal data and simply indicates the post ID of the article you just edited. It expires after 1 day.<br /><br />
+
+            <h4>Embedded content from other websites</h4><br /><br />
+
+            Content on our platforms (app and website) may include embedded content (e.g. videos, images, articles, etc.). Embedded content from other websites behaves in the exact same way as if the user has visited the other website.<br />
+
+            These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content, including tracking your interaction with the embedded content if you have an account and are logged in to that website.<br />
+
+            <h4>Who we share your data with</h4><br />
+
+            If you request a password reset, your IP address will be included in the reset email.
+            How long we retain your data<br />
+
+            If you upload a video, the video and its metadata are retained indefinitely. If you leave a comment, the comment and its metadata are retained indefinitely. This is so we can recognize and approve any follow-up comments automatically instead of holding them in a moderation queue.<br />
+
+            When users share comments and videos on our App, it is only valid to other users for at least 24hrs – 72 hours. However, we have the rights to download the video content and text for our organisational data to help learn how to communicate with our members better.<br />
+
+            For users that register on our website (if any), we also store the personal information they provide in their user profile. All users can see, edit, or delete their personal information at any time (except they cannot change their username). Website administrators can also see and edit that information.<br />
+
+            <h4>What rights you have over your data</h4><br />
+
+            If you have an account on this site, or have left comments, you can request to receive an exported file of the personal data we hold about you, including any data you have provided to us. You can also request that we erase any personal data we hold about you. This does not include any data we are obliged to keep for administrative, legal, or security purposes.<br /><br />
+           
+            <h4>Where we send your data</h4><br />
+
+            Visitor comments may be checked through an automated spam detection service.<br />
+
+        </h6>
+    </div>
+                    
+    <!-- End of Featured section
+        ============================================= --> 
+     <!-- Start of Newslatter  section
+        ============================================= -->
+        <section id="ei-newslatter" class="ei-newslatter-section position-relative" style="background-color: red !important">
+            <div class="ei-newslatter-box position-relative">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="ei-newslatter-contnet appeight-headline pera-content">
+                                <h3>Join our  <span>waitlist!</span></h3>
+                                <div class="ei-newslatter-form position-relative">
+                                    <form action="#">
+                                        <input class="email" name="email" type="email" placeholder="Enter your email address">
+                                        <div class="nws-button position-absolute text-capitalize">
+                                            <button class="hover-btn" type="submit" value="Submit" style="background: linear-gradient(to right, #e90e8b, #8bc541);"> Subscribe Now</button>
+                                        </div>
+                                        <p>* enter your email address to get notifications...</p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ei-news-vector1 position-absolute"><img src="{% static 'main/assets/img/app-landing/shape/n-shape1.png' %}" alt=""></div>
+                <div class="ei-news-vector2 position-absolute"><img src="{% static 'main/assets/img/app-landing/shape/n-shape2.png' %}" alt=""></div>
+                <div class="ei-news-vector3 position-absolute" data-parallax='{"x" : 50}'><img src="{% static 'main/assets/img/app-landing/shape/n-shape3.png' %}" alt=""></div>
+            </div>
+            <div class="ei-newslatter-mockup">
+                
+            </div>
+        </section>
+     <!-- End of Newslatter  section
+        ============================================= -->
+
+            
+
+      <!-- Start of Footer  section
+        ============================================= -->
+        <section id="ei-footer" class="ei-footer-section position-relative">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="ei-footer-widget pera-content appeight-headline">
+                            <div class="ei-footer-logo">
+                                <img style="margin-top: -50px;" width="100px" height="50px" src="https://www.helloonions.com/static/logo1.png" alt="">
+                            </div>
+                            <p style="margin-top: -40px;">
+                                
+                            We are a community<br />
+
+                            Onions is a great place to connect and share solutions to problems facing our society, for fun and for greatness.
+
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="ei-footer-widget appeight-headline ul-li-block">
+                            <h3 class="ei-widget-title">Useful link:</h3>
+                            <ul>
+                                <li><a href="#">Home</a></li>
+                                <li><a href="#">Policy</a></li>
+                                <li><a href="#">FAQ</a></li>
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">GitHub</a></li>
+                                <li><a href="#">Contact</a></li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="ei-footer-widget appeight-headline  ul-li-block">
+                            <h3 class="ei-widget-title">Contact:</h3>
+                            <h4>
+                                <i class="fas fa-envelope"></i>
+                                Send Mail: Admin 
+                                <span>(24/7)</span>
+                            </h4>
+                            <h4>
+                             <i class="fas fa-envelope"></i>
+                             Send Mail: Marketting, 
+                             <span>(24/7)</span>
+                         </h4>
+                         <div class="download-btn">
+                            <a href="#"><img src="{% static 'main/assets/img/app-landing/logo/app1.png' %}" alt=""></a>
+                            <a href="#"><img src="{% static 'main/assets/img/app-landing/logo/gp1.png' %}" alt=""></a>
+                        </div>
+                        <div class="ei-footer-social">
+                            <a href="#"><i class="fab fa-github "></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-medium"></i></a>
+                            <a href="#"><i class="fab fa-discord"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ei-footer-copyright">
+            <div class="container">
+                <div class="ei-footer-copyright-content">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="ei-copyright-text">
+                                <p>© 2022 <a href="#">Onions Nigeria</a></p>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="ei-copyright-menu">
+                                <a href="#">Help</a>
+                                <a href="{% url 'main:privacy' %}">Terms & Conditions </a>
+                                <a href="{% url 'main:privacy' %}">Privacy </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ei-footer-shape1 position-absolute" data-parallax='{"x" : 60}'><img src="{% static 'main/assets/img/app-landing/shape/fo-shape1.png' %}" alt=""></div>
+        <div class="ei-footer-shape2 position-absolute" data-parallax='{"y" : 60}'><img src="{% static 'main/assets/img/app-landing/shape/fo-shape2.png' %}" alt=""></div>
+        <div class="ei-footer-shape3 position-absolute"><img src="{% static 'main/assets/img/app-landing/shape/eimap.png' %}" alt=""></div>
+    </section>
+      <!-- End of Footer  section
+        ============================================= -->            
+
+        <!-- JS library -->
+        <script src="{% static 'main/assets/js/jquery.js' %}"></script>
+        <script src="{% static 'main/assets/js/popper.min.js' %}"></script>
+        <script src="{% static 'main/assets/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'main/assets/js/appear.js' %}"></script>
+        <script src="{% static 'main/assets/js/owl.js' %}"></script>
+        <script src="{% static 'main/assets/js/wow.min.js' %}"></script>
+        <script src="{% static 'main/assets/js/aos.js' %}"></script>
+        <script src="{% static 'main/assets/js/slick.js' %}"></script>
+        <script src="{% static 'main/assets/js/pagenav.js' %}"></script>
+        <script src="{% static 'main/assets/js/odometer.js' %}"></script>
+        <script src="{% static 'main/assets/js/bxslider.js' %}"></script>
+        <script src="{% static 'main/assets/js/jquery.barfiller.js' %}"></script>
+        <script src="{% static 'main/assets/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+        <script src="{% static 'main/assets/js/parallax-scroll.js' %}"></script>
+        <script src="{% static 'main/assets/js/swiper.min.js' %}"></script>
+        <script src="{% static 'main/assets/js/typer-new.js' %}"></script>
+        <script src="{% static 'main/assets/js/script.js' %}"></script>
+    </body>
+    </html>

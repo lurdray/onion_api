@@ -124,7 +124,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 STATIC_URL = '/static/'
 
 
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'server145.web-hosting.com'

@@ -1,0 +1,500 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    
+    <link rel="alternate icon" href="{% static 'main/assets/img/fav.png' %}">
+    <link rel="icon" type="image/svg+xml" href="{% static 'main/assets/img/fav.png' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keywords" content="ONIONS - A SOCIAL NETWORK FOR PROBLEM SOLVING."/>
+
+    <meta name="msapplication-TileColor" content="#da532c"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta property="og:title" content="ONIONS"/>
+    <meta name="twitter:title" content="ONIONS"/>
+
+    <meta name="twitter:description" content="ONIONS - A SOCIAL NETWORK FOR PROBLEM SOLVING.
+    "/>
+    <meta property="og:description" content="ONIONS - A SOCIAL NETWORK FOR PROBLEM SOLVING."/>
+
+    
+    <meta name="description" content="ONIONS - A SOCIAL NETWORK FOR PROBLEM SOLVING." content="IE=edge"/>
+
+    <title>ONIONS - A SOCIAL NETWORK FOR PROBLEM SOLVING.</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'main/assets/img/fav.png' %}"/>
+    
+    <link rel="alternate icon" href="{% static 'main/assets/img/fav.png' %}">
+    <link rel="shortcut icon" href="{% static 'main/assets/img/fav.png' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'main/assets/img/fav.png' %}" type="image/x-icon">
+    <meta name="msapplication-TileColor" content="#da532c"/>
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta property="og:title" content="ONIONS"/>
+    <meta name="twitter:title" content="ONIONS"/>
+    <link rel="stylesheet" href="{% static 'main/assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/newfont.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/owl.carousel.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/fontawesome-all.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/swiper.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/jquery.bxslider.min.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/jquery.mCustomScrollbar.min.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/odometer-theme-default.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/flaticon.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/css/dark-version.css' %}">
+    <link rel="stylesheet" href="{% static 'main/assets/assets/css/smm.css' %}">
+</head>
+
+<body class="app-eight-home saas-classic dark-version" data-spy="scroll" data-target=".navigation-eight" data-offset="50">
+
+    <div class="ei-up">
+        <a href="#" id="scrollup" class="ei-scrollup text-center"><i class="fas fa-angle-up"></i></a>
+    </div>
+    
+
+
+        <!-- Start of header section
+        ============================================= -->
+        <header id="header_main" class="saas_two_main_header">
+            <div class="container">
+                <div class="s_main_menu">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="brand_logo" style="height: 70px;">
+                                <a href="{% url 'main:index' %}"><img style="margin-top: -74px;" width="200px" height="80px" src="https://www.helloonions.com/static/logo1.png" alt=""></a>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="main_menu_list clearfix float-right">
+                                <nav class="s2-main-navigation  clearfix ul-li">
+                                    <ul id="main-nav" class="navbar-nav text-capitalize clearfix">
+                                        <li><a href="{% url 'main:index' %}">Home</a></li>
+                                        <li><a href="{% url 'main:privacy' %}">Privacy</a></li>
+                                        <li><a href="#ei-faq">FAQs</a></li>
+                                        <li><a href="#ei-screenshots">More</a> </li>
+                                        
+                                    </ul>
+                                </nav>
+                                <div style="background: linear-gradient(to right, #e90e8b, #8bc541);" class="saas_sign_up_btn text-center">
+                                    <a href="#!"> Get Started</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- //desktop menu -->
+                <div class="s2-mobile_menu relative-position">
+                    <div class="s2-mobile_menu_button s2-open_mobile_menu">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                    <div class="s2-mobile_menu_wrap">
+                        <div class="mobile_menu_overlay s2-open_mobile_menu"></div>
+                        <div class="s2-mobile_menu_content">
+                            <div class="s2-mobile_menu_close s2-open_mobile_menu">
+                                <i class="far fa-times-circle"></i>
+                            </div>
+                            <div class="m-brand-logo text-center" style="height: 70px;">
+                                <a href="{% url 'main:index' %}"><img style="margin-top: -74px;" width="200px" height="100px" src="https://www.helloonions.com/static/logo1.png" alt=""></a>
+                            </div>
+                            <nav class="s2-mobile-main-navigation  clearfix ul-li">
+                             <ul id="m-main-nav" class="navbar-nav text-capitalize clearfix">
+                                <li><a href="{% url 'main:index' %}">Home</a></li>
+                                <li><a href="{% url 'main:privacy' %}">Privacy</a></li>
+                                <li><a href="#ei-faq">FAQs</a></li>
+                                <li><a href="#ei-screenshots">More</a> </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End of header section
+        ============================================= -->
+
+
+    <!-- Start of Banner section
+        ============================================= -->
+        <section id="eight-banner" class="eight-banner-section position-relative">
+            <div class="container" >
+                <div class="row" style="background-color: red !important">
+                    <div class="col-lg-12">
+                        <div class="eight-banner-content" >
+                            <div class="banner-content-box appeight-headline pera-content">
+                                <h1 class="cd-headline clip is-full-width" style="font-size: 40px;">
+                                    Everyone’s Problem Is On Us.</h1><h1 class="cd-headline clip is-full-width">
+                                    <p>Onions is the concept of finding solutions to problems in less than 72hours from people who have either lived it first or learnt about it.</p><br />
+                                    <span class="cd-words-wrapper">
+                                        <b class="is-visible" style="color:#8bc541">ONIONS</b>
+                                        <b  style="color:#f15b29">ONIONS</b>
+                                        <b  style="color:#e90e8b">ONIONS</b>
+                                        <b  style="color:#ef4237">ONIONS</b>
+                                    </span>
+                                </h1>
+                                <div class="ei-banner-btn">
+                                    <a href="#">Get Started!</a>
+                                </div>
+                                <div class="ei-banner-review pera-content ul-li">
+                                    <ul>
+                                        <li><i class="fas fa-star"></i></li>
+                                        <li><i class="fas fa-star"></i></li>
+                                        <li><i class="fas fa-star"></i></li>
+                                        <li><i class="fas fa-star"></i></li>
+                                        <li><i class="fas fa-star"></i></li>
+                                    </ul>
+                                   
+                                </div>
+                            </div>
+                            <div style="border-radius: 10px; margin-right: -300px;" class="ei-banner-mbl-mockup wow fadeInRight" data-wow-delay="600ms" data-wow-duration="1500ms">
+                                <img width="70%" height="auto" src="{% static 'main/onions.svg' %}" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="waveWrapper waveAnimation">
+                <div class="waveWrapperInner bgTop">
+                    <div class="wave waveTop" style="background-image: url({% static 'main/assets/img/dark-img/dw1.png' %})"></div>
+                </div>
+                <div class="waveWrapperInner bgMiddle">
+                    <div class="wave waveMiddle" style="background-image: url({% static 'main/assets/img/dark-img/dw2.png' %})"></div>
+                </div>
+                <div class="waveWrapperInner bgBottom">
+                    <div class="wave waveBottom" style="background-image: url({% static 'main/assets/img/dark-img/dw3.png' %})"></div>
+                </div>
+            </div>
+        </section>
+    <!-- End of Banner section
+        ============================================= --> 
+
+    <!-- Start of Featured  section
+        ============================================= -->
+        <section id="feature-eight" class="feature-eight-section position-relative">
+            <div class="container">
+                <div class="eight-section-title appeight-headline pera-content text-center">
+                    <span class="eg-title-tag">
+                        Welcome to the Onions platform <i class="square-shape"><i></i><i></i> <i></i> <i></i> </i>
+                    </span>
+                    <h2>GOT A PROBLEM ?<br /><br />
+                        
+                        <p>Onions is the concept of finding solutions to problems in less than 72hours from people who have either lived it first or learnt about it.<br /><br />
+They say, ‘true problems give birth to great startups’. With thousands of problems shared on Onions, this community is also for anyone who doesn’t yet have an idea for a startup, and wants to find one.</p>
+                    </div>
+                    <!-- /title -->
+
+                    <div class="eight-feature-content">
+                        <div class="row justify-content-md-center">
+                            <div class="col-lg-3 col-md-6  wow fadeFromUp" data-wow-delay="0ms" data-wow-duration="1500ms" >
+                                <div class="eight-feature-box text-center position-relative" style="background: linear-gradient(to right, #f69322, #e90e8b);">
+                                    <div class="feature-icon8 position-relative">
+                                        <i class="flaticon-logo"></i>
+                                        <span class="ei-icon-bg"></span>
+                                    </div>
+                                    <div class="feature-text8 appeight-headline pera-content">
+                                        <h3>Share Problems</h3>
+                                        <p  style="color: #000000;">Share your problems with millions of users on the Onions Network<br /><br /></p>
+                                    </div>
+                                    <div class="ei-feature-more">
+                                        <a href="#"><i class="fas fa-plus"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 wow fadeFromUp" data-wow-delay="300ms" data-wow-duration="1500ms">
+                                <div class="eight-feature-box text-center position-relative" style="background: linear-gradient(to right, #e90e8b, #8bc541);">
+                                    <div class="feature-icon8 position-relative">
+                                        <i class="flaticon-computer"></i>
+                                        <span class="ei-icon-bg"></span>
+                                    </div>
+                                    <div class="feature-text8 appeight-headline pera-content">
+                                        <h3>Share Solutions</h3>
+                                        <p style="color: #000000;">You too can be part of the Onions Solution Providers.<br /><br /><br /></p>
+                                    </div>
+                                    <div class="ei-feature-more">
+                                        <a href="#"><i class="fas fa-plus"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 wow fadeFromUp" data-wow-delay="900ms" data-wow-duration="1500ms">
+                                <div class="eight-feature-box text-center position-relative" style="background: linear-gradient(to right, #8bc541, #d6de27);">
+                                    <div class="feature-icon8 position-relative">
+                                        <i class="flaticon-pen-tool"></i>
+                                        <span class="ei-icon-bg"></span>
+                                    </div>
+                                    <div class="feature-text8 appeight-headline pera-content">
+                                        <h3>Real Time Updates</h3>
+                                        <p style="color: #000000;">Solutions are very important, so we give you real time update as they come.</p>
+                                    </div>
+                                    <div class="ei-feature-more">
+                                        <a href="#"><i class="fas fa-plus"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 wow fadeFromUp" data-wow-delay="1200ms" data-wow-duration="1500ms">
+                                <div class="eight-feature-box text-center position-relative" style="background: linear-gradient(to right, #ef4237, #d6de27);">
+                                    <div class="feature-icon8 position-relative">
+                                        <i class="flaticon-layers"></i>
+                                        <span class="ei-icon-bg"></span>
+                                    </div>
+                                    <div class="feature-text8 appeight-headline pera-content">
+                                        <h3>Custom Problem Interest</h3>
+                                        <p  style="color: #000000;">You have the flexibility to set your desired problem of interest.</p>
+                                    </div>
+                                    <div class="ei-feature-more">
+                                        <a href="#"><i class="fas fa-plus"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ei-feature-shape"><img src="{% static 'main/assets/img/app-landing/shape/f-shape1.png' %}" alt=""></div>
+            </section>
+    <!-- End of Featured section
+        ============================================= --> 
+
+        <!-- Start of About Us section
+            ============================================= -->
+            <section id="str-about" class="str-about-section position-relative">
+                <div class="str-aboutbg1 position-absolute"><img src="{% static 'main/assets/img/startup/shape/vs1.png' %}" alt=""></div>
+                <div class="str-aboutbg2 position-absolute"><img src="{% static 'main/assets/img/startup/shape/vs2.png' %}" alt=""></div>
+                <div class="str-aboutbg3 position-absolute"><img src="{% static 'main/assets/img/startup/shape/vs3.png' %}" alt=""></div>
+                <div class="container">
+                    <div class="str-about-content">
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <div class="str-about-text wow fadeFromRight" data-wow-delay="0ms" data-wow-duration="1500ms">
+                                    <div class="str-section-title text-left str-title-left str-headline">
+                                        <span class="str-title-tag">Onions</span>
+                                        <h2>“If you’ve ever wanted to earn something for solving a problem in our society, now is your chance”. 
+                                        </h2>
+                                    </div>
+                                    <div class="str-about-textarea">
+                                        By participating in challenges or briefs from partnering companies, organisations and NGOs, you can earn a reward for your submissions, based on set criteria. It’s time to unleash that problem-solving energy of yours in the reward-direction. 
+
+
+                                    </div>
+                                    <div class="str-about-details" style="color: #ff00d6">
+                                       Become a Member for FREE!<br /><br />
+
+                                        Members get access to all contents and tools. Upgrading your membership gets you access to exclusive exhibition and shows. Our Premium membership cost $50 and is billed annually.
+                                    </div>
+                                    
+                                    
+                                </div>
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="str-about-img position-relative wow fadeFromLeft" data-wow-delay="300ms" data-wow-duration="1500ms">
+                                    <div class="str-about-shape"><img src="https://images.pexels.com/photos/5798114/pexels-photo-5798114.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt=""></div>
+                                    <div class="str-about-img-field">
+                                        
+                                    </div>
+                                    <div class="str-about-img-field">
+                                        <div class="str-about-pic">
+                                            
+                                        </div>
+                                        <div class="str-about-pic">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="str-about-feature-area">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="str-about-feature-box clearfix wow fadeFromLeft" data-wow-delay="0ms" data-wow-duration="1500ms" style="background: linear-gradient(to right, #f69322, #e90e8b);">
+                                        <div class="smm-feature-icon float-left">
+                                        <img src="{% static 'main/assets/img/smm/icon/sm-f1.png' %}" alt="">
+                                        </div>
+                                        <div class="str-about-feature-text str-headline" >
+                                            <h3>Why I started Onions ?
+                                            </h3>
+                                            <p>For some reason, my colleagues and friends were not different from my mum, who somewhat believed that I have a solution to every problem....</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="str-about-feature-box clearfix wow fadeFromLeft" data-wow-delay="300ms" data-wow-duration="1500ms" style="background: linear-gradient(to right, #e90e8b, #8bc541);">
+                                        <div class="smm-feature-icon float-left">
+                                            <img src="{% static 'main/assets/img/smm/icon/sm-f3.png' %}" alt="">
+                                        </div>
+                                        <div class="str-about-feature-text str-headline">
+                                            <h3 style="font-size: 22px;">Have a business problem ?<br />Crowdsource your ideas.</h3>
+                                            <p>If you agree that the smartest people are not working for your agency, this is your chance to find them....
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="str-about-feature-box clearfix wow fadeFromLeft" data-wow-delay="600ms" data-wow-duration="1500ms" style="background: linear-gradient(to right, #8bc541, #d6de27);">
+                                        <div class="smm-feature-icon float-left">
+                                            <img src="{% static 'main/assets/img/smm/icon/sm-f6.png' %}" alt="">
+                                        </div>
+                                        <div class="str-about-feature-text str-headline">
+                                            <h3>A social network for problem solving.
+                                            </h3>
+                                            <p>If we can share our brightest moments together, why can’t we share our ugliest moments ?<br /><br /></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                                
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </div>
+            </section>
+
+     <!-- Start of Newslatter  section
+        ============================================= -->
+        <section id="ei-newslatter" class="ei-newslatter-section position-relative" style="background-color: red !important">
+            <div class="ei-newslatter-box position-relative">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="ei-newslatter-contnet appeight-headline pera-content">
+                                <h3>Join our  <span>waitlist!</span></h3>
+                                <div class="ei-newslatter-form position-relative">
+                                    <form action="#">
+                                        <input class="email" name="email" type="email" placeholder="Enter your email address">
+                                        <div class="nws-button position-absolute text-capitalize">
+                                            <button class="hover-btn" type="submit" value="Submit" style="background: linear-gradient(to right, #e90e8b, #8bc541);"> Subscribe Now</button>
+                                        </div>
+                                        <p>* enter your email address to get notifications...</p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ei-news-vector1 position-absolute"><img src="{% static 'main/assets/img/app-landing/shape/n-shape1.png' %}" alt=""></div>
+                <div class="ei-news-vector2 position-absolute"><img src="{% static 'main/assets/img/app-landing/shape/n-shape2.png' %}" alt=""></div>
+                <div class="ei-news-vector3 position-absolute" data-parallax='{"x" : 50}'><img src="{% static 'main/assets/img/app-landing/shape/n-shape3.png' %}" alt=""></div>
+            </div>
+            <div class="ei-newslatter-mockup">
+                
+            </div>
+        </section>
+     <!-- End of Newslatter  section
+        ============================================= -->
+
+            
+
+      <!-- Start of Footer  section
+        ============================================= -->
+        <section id="ei-footer" class="ei-footer-section position-relative">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="ei-footer-widget pera-content appeight-headline">
+                            <div class="ei-footer-logo">
+                                <img style="margin-top: -50px;" width="100px" height="50px" src="https://www.helloonions.com/static/logo1.png" alt="">
+                            </div>
+                            <p style="margin-top: -40px;">
+                                
+                            We are a community<br />
+
+                            Onions is a great place to connect and share solutions to problems facing our society, for fun and for greatness.
+
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="ei-footer-widget appeight-headline ul-li-block">
+                            <h3 class="ei-widget-title">Useful link:</h3>
+                            <ul>
+                                <li><a href="#">Home</a></li>
+                                <li><a href="#">Policy</a></li>
+                                <li><a href="#">FAQ</a></li>
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">GitHub</a></li>
+                                <li><a href="#">Contact</a></li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="ei-footer-widget appeight-headline  ul-li-block">
+                            <h3 class="ei-widget-title">Contact:</h3>
+                            <h4>
+                                <i class="fas fa-envelope"></i>
+                                Send Mail: Admin 
+                                <span>(24/7)</span>
+                            </h4>
+                            <h4>
+                             <i class="fas fa-envelope"></i>
+                             Send Mail: Marketting, 
+                             <span>(24/7)</span>
+                         </h4>
+                         <div class="download-btn">
+                            <a href="#"><img src="{% static 'main/assets/img/app-landing/logo/app1.png' %}" alt=""></a>
+                            <a href="#"><img src="{% static 'main/assets/img/app-landing/logo/gp1.png' %}" alt=""></a>
+                        </div>
+                        <div class="ei-footer-social">
+                            <a href="#"><i class="fab fa-github "></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-medium"></i></a>
+                            <a href="#"><i class="fab fa-discord"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ei-footer-copyright">
+            <div class="container">
+                <div class="ei-footer-copyright-content">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="ei-copyright-text">
+                                <p>© 2022 <a href="#">Onions Nigeria</a></p>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="ei-copyright-menu">
+                                <a href="#">Help</a>
+                                <a href="{% url 'main:privacy' %}">Terms & Conditions </a>
+                                <a href="{% url 'main:privacy' %}">Privacy </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ei-footer-shape1 position-absolute" data-parallax='{"x" : 60}'><img src="{% static 'main/assets/img/app-landing/shape/fo-shape1.png' %}" alt=""></div>
+        <div class="ei-footer-shape2 position-absolute" data-parallax='{"y" : 60}'><img src="{% static 'main/assets/img/app-landing/shape/fo-shape2.png' %}" alt=""></div>
+        <div class="ei-footer-shape3 position-absolute"><img src="{% static 'main/assets/img/app-landing/shape/eimap.png' %}" alt=""></div>
+    </section>
+      <!-- End of Footer  section
+        ============================================= -->            
+
+        <!-- JS library -->
+        <script src="{% static 'main/assets/js/jquery.js' %}"></script>
+        <script src="{% static 'main/assets/js/popper.min.js' %}"></script>
+        <script src="{% static 'main/assets/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'main/assets/js/appear.js' %}"></script>
+        <script src="{% static 'main/assets/js/owl.js' %}"></script>
+        <script src="{% static 'main/assets/js/wow.min.js' %}"></script>
+        <script src="{% static 'main/assets/js/aos.js' %}"></script>
+        <script src="{% static 'main/assets/js/slick.js' %}"></script>
+        <script src="{% static 'main/assets/js/pagenav.js' %}"></script>
+        <script src="{% static 'main/assets/js/odometer.js' %}"></script>
+        <script src="{% static 'main/assets/js/bxslider.js' %}"></script>
+        <script src="{% static 'main/assets/js/jquery.barfiller.js' %}"></script>
+        <script src="{% static 'main/assets/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+        <script src="{% static 'main/assets/js/parallax-scroll.js' %}"></script>
+        <script src="{% static 'main/assets/js/swiper.min.js' %}"></script>
+        <script src="{% static 'main/assets/js/typer-new.js' %}"></script>
+        <script src="{% static 'main/assets/js/script.js' %}"></script>
+    </body>
+    </html>

@@ -2,6 +2,22 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+import random
+import string
+
+
+
+
+class Category(models.Model):
+	name =  models.CharField(max_length=50, default="none")
+	creator = models.CharField(max_length=50, default="Admin")
+
+	status = models.BooleanField(default=False)
+	pub_date = models.DateTimeField(default=timezone.now)
+
+	def __str__(self):
+		return self.name
+
 
 class AppUser(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -85,6 +101,7 @@ class Comment(models.Model):
 
 
 class Problem(models.Model):
+	upload_path = 'app_files/videos/'.join(random.choices(string.ascii_uppercase + string.digits, k = 10))
 	app_user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
 	auth_code = models.CharField(max_length=50, default="none")
 	app_user_name1 = models.CharField(max_length=50, default="none")
@@ -92,7 +109,7 @@ class Problem(models.Model):
 	profile_photo = models.FileField(upload_to='account_files/profile_photos/', blank=True, default="default_files/default_face.png")
 	title = models.CharField(max_length=50, default="none")
 	detail = models.CharField(max_length=100, default="none")
-	video = models.FileField(upload_to='app_files/videos/', blank=True, default="default_files/default.mp4")
+	video = models.FileField(upload_to=upload_path, blank=True, default="default_files/default.mp4")
 
 	category = models.CharField(max_length=50, default="none")
 	switch_date = models.DateTimeField(default=timezone.now)
@@ -125,10 +142,17 @@ class Problem(models.Model):
 
 	def __str__(self):
 		return self.title
+		
+		
+	def update_filename(instance, filename):
+		path = "upload/path/"
+		format_k = instance.userid + instance.transaction_uuid + instance.file_extension
+		return os.path.join(path, format_k)
 
 
 
 class Solution(models.Model):
+	upload_path = 'app_files/videos/'.join(random.choices(string.ascii_uppercase + string.digits, k = 10))
 	app_user = models.ForeignKey(AppUser, on_delete=models.CASCADE)
 	auth_code = models.CharField(max_length=50, default="none")
 	app_user_name1 = models.CharField(max_length=50, default="none")
@@ -155,13 +179,19 @@ class Solution(models.Model):
 
 	rating = models.IntegerField(default=0)
 
-	video = models.FileField(upload_to='app_files/videos/', blank=True, default="default_files/default.mp4")
+
+	video = models.FileField(upload_to=upload_path, blank=True, default="default_files/default.mp4")
 
 	status = models.BooleanField(default=False)
 	pub_date = models.DateTimeField(default=timezone.now)
 
 	def __str__(self):
-		return self.problem.title
+		return self.title
+		
+	def update_filename(instance, filename):
+		path = "upload/path/"
+		format_k = instance.userid + instance.transaction_uuid + instance.file_extension
+		return os.path.join(path, format_k)
 
 
 

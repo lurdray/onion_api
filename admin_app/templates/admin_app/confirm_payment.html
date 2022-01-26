@@ -1,0 +1,48 @@
+{% extends 'admin_app/base2.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+<br /><br /><br />
+<div class="content-wrapperk text-center">
+
+
+<section class="content text-center">
+    <div class="container-fluid">
+      <div class="row text-center">
+          <div class="col-lg-4 col-md-4">
+              
+          </div>
+          <div class="col-lg-4 col-md-4">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title text-center">Confirm Payment!</h3>
+
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <br />
+                <form method="post" class="form-group text-nowrap container">
+                    {% csrf_token %}
+                    <input class="form-control" type="email" name="username" placeholder="Enter Email Address connected to your onions" required>
+                    <br />
+                    <button class="btn-group btn btn-primary" type="submit">Confirm</button>
+                </form>
+
+                
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-4 col-md-4">
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+</div>
+
+{% endblock content %}

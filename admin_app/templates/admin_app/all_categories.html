@@ -1,0 +1,85 @@
+{% extends 'admin_app/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">Categories</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Categories</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+
+
+<section class="content">
+    <div class="container-fluid">
+
+
+      <div class="row">
+        <form class="form-group" method="post">
+            {% csrf_token %}
+            <input class="form-control" type="text" name="name" placeholder="Enter Category Name">
+            <br />
+            <button class="form-control">Add New Categories</button>
+        </form>
+
+      </div>
+      <br /><br />
+
+      <div class="row">
+          <div class="col-12">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">All Categories</h3>
+
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap container">
+                  <thead>
+                    <tr>
+                        <th>Names</th>
+                        <th>Creators</th>
+                        <th>Dates</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in categories %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.creator }}</td>
+                            <td>{{ item.pub_date }}</td>
+
+                            <td><a class="btn btn-primary" href="{% url 'admin_app:category_detail' item.id %}">Edit</a> </td>
+                            <td><a class="btn btn-primary" href="{% url 'admin_app:delete_category' item.id %}">Delete</a> </td>
+                            <td></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+</div>
+
+{% endblock content %}

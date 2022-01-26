@@ -11,6 +11,36 @@ from main.models import *
 
 
 
+
+
+def ConfirmPaymentView(request):
+	
+
+	if request.method == "POST":
+		username = request.POST.get("username")
+
+		try:
+			app_user = AppUser.objects.get(user__username=username)
+			app_user.payment_status = True
+			app_user.save()
+
+			return HttpResponse("Payment confirmed, returning back to app.")
+
+		except:
+			return HttpResponse("Sorry there was an issue, returning back to app.")
+
+
+		
+	else:
+
+		context = {
+		}
+
+		return render(request, "admin_app/confirm_payment.html", context)
+
+
+
+
 def SignInView(request):
 
 	if request.method == "POST":
@@ -50,6 +80,68 @@ def SignOutView(request):
 
 	return HttpResponseRedirect(reverse("admin_app:sign_in"))
 
+
+
+
+def AllCategoriesView(request):
+	categories = Category.objects.order_by("-pub_date")
+	if request.method == "POST":
+
+		name = request.POST.get("name")
+
+		category = Category.objects.create(name=name)
+		category.save()
+
+		return HttpResponseRedirect(reverse("admin_app:all_categories"))
+
+		
+
+		
+	else:
+		context = {
+		"categories": categories
+		}
+
+		return render(request, "admin_app/all_categories.html", context)
+
+
+
+
+def CategoryDetailView(request, category_id):
+	category = Category.objects.get(id=category_id)
+	if request.method == "POST":
+		new_name = request.POST.get("new_name")
+		category.name = new_name
+		category.save()
+
+		return HttpResponseRedirect(reverse("admin_app:all_categories"))
+		
+	else:
+
+		context = {
+		"category": category
+		}
+
+		return render(request, "admin_app/category_detail.html", context)
+
+
+
+
+def DeleteCategoryView(request, category_id):
+	category = Category.objects.get(id=category_id)
+	if request.method == "POST":
+		category = Category.objects.get(id=category_id)
+		category.delete()
+
+		return HttpResponseRedirect(reverse("admin_app:all_categories"))
+
+		
+	else:
+		context = {
+		"category": category
+		}
+
+		return render(request, "admin_app/delete_category.html", context)
 		
 
 

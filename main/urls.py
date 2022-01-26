@@ -10,6 +10,11 @@ from django.urls import path, include
 
 urlpatterns = [
 
+    #landing page
+    path('', views.IndexView, name="index"),
+    path('privacy', views.PrivacyView, name="privacy"),
+    path('contact', views.ContactView, name="contact"),
+
     #onion api
     path('sign-up/', views.SignUpView),
     path('sign-in/', views.SignInView),

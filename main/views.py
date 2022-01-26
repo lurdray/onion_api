@@ -19,11 +19,59 @@ import os
 from django.utils import timezone
 import datetime
 
+from django.core.mail import send_mail
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 from django.db.models import Q
+
+
+
+
+
+
+#########
+#lp shit!
+def IndexView(request):
+    if request.method == "POST":
+        pass
+
+
+    else:
+        
+        context = {}
+        return render(request, "main/index.html", context)
+
+
+def PrivacyView(request):
+    if request.method == "POST":
+        pass
+
+
+    else:
+        
+        context = {}
+        return render(request, "main/privacy.html", context)
+
+
+
+def ContactView(request):
+    if request.method == "POST":
+        pass
+
+
+    else:
+        
+        context = {}
+        return render(request, "main/contact.html", context)
+
+
+
+
+
+
+
 
 
 def RemoveVideoFunc():
@@ -35,12 +83,9 @@ def RemoveVideoFunc():
 
         for item in all_problems:
 
-            switch_date = item.switch_date
+            switch_date = datetime(int(str(item.switch_date)[:4]), int(str(item.switch_date)[5:7]), int(str(item.switch_date)[8:10]))
             today_date = datetime.now()
 
-            switch_date = int(str(switch_date)[:4]) + (int(str(switch_date)[5:7])*10) + int(str(switch_date)[8:10])
-            today_date = int(str(today_date)[:4]) + (int(str(today_date)[5:7])*10) + int(str(today_date)[8:10])
-       
             if today_date > switch_date or today_date == switch_date:
 
                 problem = Problem.objects.get(id=item.id)
@@ -61,7 +106,7 @@ def RemoveVideoFunc():
 
 
 
-                all_solutions = Solution.objects.filter(problem__id=problem.id)
+                all_solutions = Solution.objects.filter(problem__pk=item.id)
 
                 for item2 in all_solutions:
 
@@ -78,7 +123,6 @@ def RemoveVideoFunc():
 
             else:
                 output = str(today_date) +" " +str(switch_date)
-                print(output)
 
     except:
         pass
@@ -95,7 +139,7 @@ def ray_randomiser(length=12):
 
 
 
-def RaySendMail(request, subject, message, to_email, code=None):
+def RaySendMail(subject, message, to_email, code=None):
 
     context = {"subject": subject, "message": message, "code": code}
     html_message = render_to_string('main/message.html', context)
@@ -104,13 +148,29 @@ def RaySendMail(request, subject, message, to_email, code=None):
     send_mail(
         subject,
         message,
-        'onionng@onionng.com',
+        'app@helloonions.com',
         [to_email,],
         html_message=html_message,
         fail_silently=False,
     )
 
 
+
+
+
+def NewProblemAlert(category):
+
+    app_users = AppUser.objects.filter(interest=category)
+
+    for item in app_users:
+        RaySendMail("New Problem Alert!", "You have a new problem needs your solution!", app_user.user.username)
+
+
+
+def EndTimeAlert(solution_id):
+
+    solution = Solution.objects.get(id=item)
+    RaySendMail("Congratulations!", "Your solution(%s) with %s claps turned out to be the best!" % (solution.title, solution.claps.count()), app_user.user.username)
 
 
 @api_view(['POST'])
@@ -137,12 +197,12 @@ def SignUpView(request):
             app_user.request_code = request_code
             app_user.save()
 
-            #RaySendMail(request, "Authentication", "Welcome to Onionng.com, Please use the authentication code below to complete your sign up!", app_user.user.username, code=request_code)
+            RaySendMail("Authentication", "Welcome to Onion, Please use the authentication code below to complete your sign up!", app_user.user.username, code=request_code)
 
 
-            data = {"status": "sign up successful"}
+            data = {"status": "sign up successful", "status_lean": True}
 
-            serializer = StatusSerializer(data=data)
+            serializer = StatusLeanSerializer(data=data)
 
             if serializer.is_valid():
                 #serializer.save()
@@ -154,9 +214,9 @@ def SignUpView(request):
 
         except:
 
-            data = {"status": "Error, email address already used."}
+            data = {"status": "Error, email address already used.", "status_lean": False}
 
-            serializer = StatusSerializer(data=data)
+            serializer = StatusLeanSerializer(data=data)
 
             if serializer.is_valid():
                 #serializer.save()
@@ -172,7 +232,7 @@ def SignUpView(request):
 def SignInView(request):
     if request.method == 'POST':
 
-        RemoveVideoFunc()
+        #RemoveVideoFunc()
 
         email = request.data["email"]
         password = request.data["password"]
@@ -227,7 +287,7 @@ def ACGetAppUserView(request, auth_code):
     app_user = AppUser.objects.get(auth_code=auth_code)
     if request.method == 'GET':
 
-        RemoveVideoFunc()
+        #RemoveVideoFunc()
 
         data = {
                 "status": app_user.status,
@@ -254,7 +314,7 @@ def IDGetAppUserView(request, app_user_id):
     app_user = AppUser.objects.get(id=app_user_id)
     if request.method == 'GET':
 
-        RemoveVideoFunc()
+        #RemoveVideoFunc()
 
         data = {
                 "status": app_user.status,
@@ -327,6 +387,8 @@ def AddProblemView(request):
 
         app_user = AppUser.objects.get(auth_code=auth_code)
 
+        category = Category.objects.create(name=category, creator=app_user)
+        category.save()
         problem = Problem.objects.create(app_user=app_user, auth_code=app_user.auth_code, app_user_name1=app_user.first_name, app_user_name2=app_user.last_name, profile_photo=app_user.profile_photo, title=title, detail=detail, category=category)
         
         if tag1:
@@ -347,6 +409,10 @@ def AddProblemView(request):
 
         problem.video = video
         problem.save()
+
+        os.rename(problem.video.path, RayRename(problem.video.path))
+
+        NewProblemAlert(problem.category)
 
         data = {
             "status": "Problem added successfully",
@@ -581,10 +647,10 @@ def AddSCommentView(request):
         solution.save()
         
         data = {
-            "status": "Comment added successfully",
+            "status": "Comment added successfully", "status_lean": True
         }
         
-        serializer = StatusSerializer(data=data)
+        serializer = StatusLeanSerializer(data=data)
         if serializer.is_valid():
             return Response(serializer.data, status=status.HTTP_201_CREATED)
             
@@ -612,10 +678,10 @@ def AddPCommentView(request):
         problem.save()
         
         data = {
-            "status": "Comment added successfully",
+            "status": "Comment added successfully", "status_lean": True
         }
         
-        serializer = StatusSerializer(data=data)
+        serializer = StatusLeanSerializer(data=data)
         if serializer.is_valid():
             return Response(serializer.data, status=status.HTTP_201_CREATED)
             
@@ -675,7 +741,7 @@ def GetProblemSolutionsView(request, problem_id):
 def GetAllProblemsView(request):
     if request.method == 'GET':
 
-        RemoveVideoFunc()
+        #RemoveVideoFunc()
 
         problems = Problem.objects.all().order_by('-pub_date')
 
@@ -690,7 +756,7 @@ def GetAllProblemsView(request):
 def GetProblemDetailView(request, auth_code, problem_id):
     if request.method == 'GET':
 
-        RemoveVideoFunc()
+        #RemoveVideoFunc()
 
         app_user = AppUser.objects.get(auth_code=auth_code)
         problem = Problem.objects.filter(id=problem_id)
@@ -733,7 +799,7 @@ def GetProblemDetailView(request, auth_code, problem_id):
         serializer = ProblemSerializer(problem, many=True)
         serializer_data = serializer.data + [{"viewed_users:": viewed_users}, {"buzzed_users:": buzzed_users}, {"clapped_users:": clapped_users}]
         if serializer:
-            return Response(serializer_data)
+            return Response(serializer.data)
 
         else:
             return HttpResponse(str("errors!"))
@@ -770,7 +836,7 @@ def GetSCommentView(request, solution_id):
 def GetAllSolutionsView(request):
     if request.method == 'GET':
 
-        RemoveVideoFunc()
+        #RemoveVideoFunc()
 
         solutions = Solution.objects.all().order_by('-pub_date')
 
@@ -787,7 +853,7 @@ def GetAllSolutionsView(request):
 def GetSolutionDetailView(request, auth_code, solution_id):
     if request.method == 'GET':
 
-        RemoveVideoFunc()
+        #RemoveVideoFunc()
 
         app_user = AppUser.objects.get(auth_code=auth_code)
         solution = Solution.objects.filter(id=solution_id)
@@ -829,7 +895,7 @@ def GetSolutionDetailView(request, auth_code, solution_id):
         serializer_data = serializer.data + [{"viewed_users:": viewed_users}, {"buzzed_users:": buzzed_users}, {"clapped_users:": clapped_users}]
 
         if serializer:
-            return Response(serializer_data)
+            return Response(serializer.data)
 
         else:
             return HttpResponse(str("errors!"))
@@ -1061,9 +1127,9 @@ def RateProblemView(request):
         problem.rating = int(rating)
         problem.save()
 
-        data = {"status": "Rating added successfully"}
+        data = {"status": "Rating added successfully", "status_lean": True}
 
-        serializer = StatusSerializer(data=data)
+        serializer = StatusLeanSerializer(data=data)
 
         if serializer.is_valid():
             #serializer.save()
@@ -1093,9 +1159,9 @@ def RateSolutionView(request):
         solution.rating = int(rating)
         solution.save()
 
-        data = {"status": "Rating added successfully"}
+        data = {"status": "Rating added successfully", "status_lean": True}
 
-        serializer = StatusSerializer(data=data)
+        serializer = StatusLeanSerializer(data=data)
 
         if serializer.is_valid():
             #serializer.save()
@@ -1112,20 +1178,19 @@ def RequestNewPwView(request):
 
     if request.method == 'POST':
 
-        auth_code =request.data["auth_code"]
         email =request.data["email"]
 
-        app_user = AppUser.objects.get(auth_code=auth_code)
+        app_user = AppUser.objects.get(user__username=email)
 
         request_code = ray_randomiser()
         app_user.request_code = request_code
         app_user.save()
 
-        RaySendMail(request, "Password Reset", "Someone(you hopefully) have requested for a password change!", app_user.user.username, code=request_code)
+        RaySendMail("Password Reset", "Someone(you hopefully) have requested for a password change!", app_user.user.username, code=request_code)
 
-        data = {"status": "New Password request was successful"}
+        data = {"status": "New Password request was successful", "status_lean": True}
 
-        serializer = StatusSerializer(data=data)
+        serializer = StatusLeanSerializer(data=data)
 
         if serializer.is_valid():
             #serializer.save()
@@ -1141,14 +1206,13 @@ def SetNewPwView(request):
 
     if request.method == 'POST':
 
-        auth_code =request.data["auth_code"]
         request_code =request.data["request_code"]
         password1 =request.data["password1"]
         password2 =request.data["password2"]
 
         if password2 == password1:
 
-            app_user = AppUser.objects.get(auth_code=auth_code)
+            app_user = AppUser.objects.get(request_code=request_code)
 
             if app_user.request_code == request_code:
 
@@ -1156,9 +1220,9 @@ def SetNewPwView(request):
                 user.set_password(password1)
                 user.save()
 
-                data = {"status": "New Password set successfully"}
+                data = {"status": "New Password set successfully", "status_lean": True}
 
-                serializer = StatusSerializer(data=data)
+                serializer = StatusLeanSerializer(data=data)
 
                 if serializer.is_valid():
                     #serializer.save()
@@ -1167,11 +1231,23 @@ def SetNewPwView(request):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
             else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                data = {"status": "New Password Not set successfully", "status_lean": False}
+
+                serializer = StatusLeanSerializer(data=data)
+
+                if serializer.is_valid():
+                    #serializer.save()
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
         else:
-            return Response(status.HTTP_400_BAD_REQUEST)
+            data = {"status": "New Password Not set successfully", "status_lean": False}
+
+            serializer = StatusLeanSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 
@@ -1181,20 +1257,19 @@ def ActivateUserView(request):
 
     if request.method == 'POST':
 
-        auth_code =request.data["auth_code"]
         request_code =request.data["request_code"]
         email =request.data["email"]
 
-        app_user = AppUser.objects.get(auth_code=auth_code)
+        app_user = AppUser.objects.get(user__username=email)
 
         if app_user.request_code == request_code:
 
             app_user.ec_status = True
             app_user.save()
 
-            data = {"status": "Email confirmed successfully"}
+            data = {"status": "Email confirmed successfully", "status_lean": True}
 
-            serializer = StatusSerializer(data=data)
+            serializer = StatusLeanSerializer(data=data)
 
             if serializer.is_valid():
                 #serializer.save()
@@ -1203,7 +1278,13 @@ def ActivateUserView(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            data = {"status": "Email Not confirmed successfully", "status_lean": False}
+
+            serializer = StatusLeanSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 
@@ -1220,9 +1301,9 @@ def SetPaymentView(request):
         app_user.payment_status = True
         app_user.save()
 
-        data = {"status": "Payment status set successfully"}
+        data = {"status": "Payment status set successfully", "status_lean": True}
 
-        serializer = StatusSerializer(data=data)
+        serializer = StatusLeanSerializer(data=data)
 
         if serializer.is_valid():
             #serializer.save()
@@ -1259,14 +1340,14 @@ def GetAllCategoriesView(request):
 
     if request.method == 'GET':
 
-        RemoveVideoFunc()
+        #RemoveVideoFunc()
 
-        problems = Problem.objects.all()
+        items = Category.objects.all()
 
         categories = set()
 
-        for item in problems:
-            categories.add(item.category)
+        for item in items:
+            categories.add(item.name)
 
         data = {"status": True, "categories": categories}
 
@@ -1294,9 +1375,9 @@ def ReportProblemView(request):
         problem.report_count += 1
         problem.save()
 
-        data = {"status": "Video Reported Successfully."}
+        data = {"status": "Video Reported Successfully.", "status_lean": True}
 
-        serializer = StatusSerializer(data=data)
+        serializer = StatusLeanSerializer(data=data)
 
         if serializer.is_valid():
             #serializer.save()
@@ -1328,9 +1409,9 @@ def ReportSolutionView(request):
         solution.report_count += 1
         solution.save()
 
-        data = {"status": "Video Reported Successfully."}
+        data = {"status": "Video Reported Successfully.", "status_lean": True}
 
-        serializer = StatusSerializer(data=data)
+        serializer = StatusLeanSerializer(data=data)
 
         if serializer.is_valid():
             #serializer.save()
@@ -1388,7 +1469,7 @@ def GetTimelineView(request):
 
     if request.method == 'GET':
 
-        RemoveVideoFunc()
+        #RemoveVideoFunc()
 
         problems = Problem.objects.all()
         solutions = Solution.objects.all()
@@ -1438,6 +1519,9 @@ def GetTimelineView(request):
                         "solution_uploader_photo": item.profile_photo.url,
 
                         }
+
+                    if i.status == True:
+                        EndTimeAlert(item.id)
 
                 timeline.append(i_list)
             

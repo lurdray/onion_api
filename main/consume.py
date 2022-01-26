@@ -7,57 +7,57 @@
 
 
 import requests
+import random
+import string
+
+import os
 
 
 
-url = "http://localhost:8000/sign-up/"
+url = "https://helloonions.com/sign-up/"
 data = {
-	"first_name": "test sam",
-	"last_name": "muel",
-	"email": "sam4@gmail.com",
-	"password": "0000"
+    "first_name": "ray guy",
+    "last_name": "ray man",
+    "email": "raymondrayodiaga@gmail.com",
+    "password": "0000"
 }
 
 #r = requests.post(url, data=data)
 #print(r.json())
 
 
-url = "http://localhost:8000/sign-in/"
+url = "https://helloonions.com/sign-in/"
 data = {
-	"email": "sam4@gmail.com",
-	"password": "0000"
+    "email": "raymondrayodiaga@gmail.com",
+    "password": "0000"
 }
 
 r = requests.post(url, data=data)
 print(r.json())
 
 
-url = "http://localhost:8000/add-problem/"
+url = "https://helloonions.com/add-problem/"
 files = {'video': open('/home/raymond/Downloads/yf.mp4','rb')}
 data = {
-	'auth_code': "5zrzf0qwmp100yltv1bga6jvrymmj4yq",
-    'title' : "sample video upload",
-    'category' : "category y",
+	'auth_code': "jtjm814njt16xwlbpidzbzu5qp0fl09j",
+    'title' : "test from ray",
+    'category' : "category ray",
     'duration' : "24hrs",
     'tag1' : "tag1",
-    'tag2' : "tag2",
-    'tag3' : "tag3",
-    'tag4' : "tag4",
-    'tag5' : "tag5",
-    'detail'  : "sample problem video"
+    'detail'  : "this is a test from ray"
 }
 
 #r = requests.post(url, files=files, data=data)
 #print(r.json())
 
 
-url = "http://localhost:8000/add-solution/"
+url = "https://helloonions.com/add-solution/"
 files = {'video': open('/home/raymond/Downloads/yf.mp4','rb')}
 data = {
-	'auth_code': "dmjy9xdsbyxucgdbt55s4g2clcna3ys6",
-    'title' : "new solution video",
-    'problem_id': "1",
-    'detail'  : "this is just some solution video!"
+	'auth_code': "jtjm814njt16xwlbpidzbzu5qp0fl09j",
+    'title' : "new solution 1",
+    'problem_id': "109",
+    'detail'  : "solution for issue 1"
 }
 
 #r = requests.post(url, files=files, data=data)
@@ -90,10 +90,10 @@ data = {
 
 
 
-url = "http://localhost:8000/solution/add-clap/"
+url = "https://helloonions.com/solution/add-clap/"
 data = {
-	'auth_code': "qhjg6yadk3973hb2l8plv0sja9zgyvzk",
-    'solution_id': "1",
+	'auth_code': "fvt7646tas7ouvg2ur0ghh183hzs7wsm",
+    'solution_id': "22",
 }
 
 r = requests.post(url, data=data)
