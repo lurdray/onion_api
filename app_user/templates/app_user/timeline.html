@@ -1,0 +1,134 @@
+
+{% extends 'app_user/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+	<div class="gap">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3">
+				    <div class="row container">
+				        
+				        {% if app_user %}
+				    <button class="new-post main-btn2" style="width: 200px; height: 50px;">Upload Problem</button>
+				    <p>Share your problems to the Onions Community.<br />
+				    Sit back and let others provide mind-blowing solutions for you to select from.</p>
+				        {% else %}
+				            <a href="{% url 'app_user:sign_up' %}">
+				            <button class="main-btn2" style="width: 200px; height: 50px;">Sign Up!</button>
+				            </a>
+				            <p>Share your problems to the Onions Community.<br />
+				    Sign Up today to get started.</p>
+				        {% endif %}
+				    
+				    
+				    <br /><br /><br />
+				    </div>
+				</div>
+				<div class="col-lg-6">
+				    
+                        <h3 class="main-title">Recent Problems</h3>
+					{% for item in problems %}
+					    <div style="background-color: ">
+					    
+						<ul class="stars-rating">
+							<li><i class="lni lni-star-filled"></i></li>
+							<li><i class="lni lni-star-filled"></i></li>
+							<li><i class="lni lni-star-filled"></i></li>
+							<li><i class="lni lni-star-filled"></i></li>
+							<li><i class="lni lni-star-filled"></i></li>
+						</ul>
+						<div class="user-post">
+							<figure><img
+                                            src="{{ item.app_user.profile_photo.url }}" alt="" style="width: 50px;
+                                              height: 40px;
+                                              object-fit: fill;
+                                            }"></figure>
+							<div class="user-name">
+								<h5>{{ item.app_user.first_name }} {{ item.app_user.last_name }}</h5>
+								<span>{{ item.pub_date }}</span>
+							</div>
+							<div class="video">
+								<a href="{% url 'app_user:problem_detail' item.id %}" title="{{ item.title }}"><img style="width: 600px;
+                                              height: 300px;
+                                              object-fit: fill;
+                                            }" src="{{ item.cover_image.url }}" alt=""><i class="lni lni-play"></i></a>
+							</div>
+							<div class="post-meta">
+								<h2>{{ item.title }}</h2>
+								<p>
+									{{ item.detail|truncatechars:50}}...
+									<a class="main-btn2" style="color: #b234a9;" href="{% url 'app_user:problem_detail' item.id %}">Read more</a>
+								</p>
+							</div>
+							<div class="more ico-hover">
+								<i class="lni lni-more"></i>
+								<div class="more-options">
+									<ul>
+										<li><i class="lni lni-trash"></i> Delete Post</li>
+										<li><i class="lni lni-ban"></i> Hide Post</li>
+										<li><i class="lni lni-pencil-alt"></i> Edit Post</li>
+									</ul>
+								</div>
+							</div>
+							<div class="user-stat">
+								<div class="emoji-state">
+									<img src="{% static 'app_user/images/svg/thumb.png' %}" alt="">
+									<img src="{% static 'app_user/images/svg/heart.png' %}" alt="">
+									<img src="{% static 'app_user/images/svg/smile.png' %}" alt="">
+									<img src="{% static 'app_user/images/svg/weep.png' %}" alt="">
+								</div>
+								<div class="coment-state">
+									<span><i class="lni lni-eye"></i>56 Views</span>
+								</div>
+								<hr style="background-color: purple;">
+							</div>
+						</div><!-- with image -->
+						 
+                    </div>
+                   
+					{% endfor %}
+
+
+					
+
+					<div class="loadmore">
+						<div class="loader">
+							<div class="line"></div>
+							<div class="line"></div>
+							<div class="line"></div>
+							<div class="line"></div>
+						</div>
+						<span>Loading...</span>
+					</div><!-- load more -->
+
+				
+			</div>
+				<div class="col-lg-3">
+					<div class="nearby-user reviews" style="text-align: left; background-color: #b234a9; color: white;">
+						<h5 style="color: white;">Analytics & Statistics</h5><hr>
+
+						<p style="color: white;">Problems: {{ problems.count }}<br />
+						<p style="color: white;">Solutions: {{ solutions.count }}<br />
+						<p style="color: white;">Users: {{ app_user_count }}</p><br />
+
+					</div>
+					<br />
+					<br />
+					<div class="nearby-user reviews" style="height: 100%; max-height: 500px; background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ5w5BXDPelTpOqwYRRgoVAgH_sLPPpuT88nGn5ryW78HKfg6HXFlSlWUvQoT4lrYbqwc&usqp=CAU);">
+						
+					</div>
+					<br />
+					<div class="nearby-user reviews" style="height: 100%; max-height: 500px; background-image: url(https://d1csarkz8obe9u.cloudfront.net/posterpreviews/yellow-gym-ad-roll-up-banner-design-template-d0ec715151bc8212817bc511aab36528_screen.jpg?ts=1637223339);">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+
+{% endblock %}

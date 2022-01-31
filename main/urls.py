@@ -9,11 +9,12 @@ from django.urls import path, include
 
 
 urlpatterns = [
-
+    
     #landing page
     path('', views.IndexView, name="index"),
-    path('privacy', views.PrivacyView, name="privacy"),
+    path('privacy-policy/', views.PrivacyView, name="privacy"),
     path('contact', views.ContactView, name="contact"),
+    path('faq/', views.FaqView, name="faq"),
 
     #onion api
     path('sign-up/', views.SignUpView),
@@ -67,6 +68,7 @@ urlpatterns = [
     path('find-all-problems/title/', views.FindAllProblemsTiView),
     
     path('get-timeline/', views.GetTimelineView),
+    path('get-notifications/<str:auth_code>/', views.GetAppUserNotificationView),
 
     path('analytics/video-rating/', views.AnalyticsVRView),
     path('analytics/views/', views.AnalyticsVView),

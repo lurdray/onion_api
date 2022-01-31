@@ -1,0 +1,264 @@
+
+{% extends 'app_user/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+
+<section>
+		<div class="gap no-gap">
+			<div class="profile-pic">
+				<img style="height: auto; max-height: 400px; width: 100%;" src="https://media.istockphoto.com/vectors/abstract-blurred-colorful-background-vector-id1248542684?k=20&m=1248542684&s=612x612&w=0&h=1yKiRrtPhiqUJXS_yJDwMGVHVkYRk2pJX4PG3TT4ZYM=" alt="">
+				<div class="user-dp">
+					<figure>
+						<img style="width: 80px;
+                                  height: 50px;
+                                  object-fit: fill;
+                                }" src="{{ app_user.profile_photo.url }}" alt="">
+						<span class="status greenbg"></span>
+					</figure>
+					<h5>{{ app_user.first_name }} {{ app_user.first_name }}</h5>
+					<ul>
+						<li><a class="redbg" href="#" title="Profile"><i class="lni lni-user"></i></a></li>
+						<li><a class="bluebg" href="settings.html" title="Edit Profile"><i class="lni lni-pencil"></i></a></li>
+						<li><a class="yellowbg" href="#" title="Follow"><i class="lni lni-star"></i></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<br /><br />
+
+	<section>
+		<div class="gap no-gap">
+			<div class="profile-info">
+				<br /><br />
+			</div>
+		</div>
+	</section>
+
+	<div class="row">
+		<br /><br /><br />
+	</div>
+	
+	<section>
+		<div class="gap no-gap">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-12">
+						<h5 class="main-title">Share it</h5>
+						<ul class="social-share">
+							<li><a class="facebook" href="#" title=""><i class="lni lni-facebook"></i></a></li>
+							<li><a class="twitter" href="#" title=""><i class="lni lni-twitter"></i></a></li>
+							<li><a class="youtube" href="#" title=""><i class="lni lni-youtube"></i></a></li>
+							<li><a class="pinterest" href="#" title=""><i class="lni lni-pinterest"></i></a></li>
+							<li><a class="instagram" href="#" title=""><i class="lni lni-instagram"></i></a></li>
+							<li><a class="dribble" href="#" title=""><i class="lni lni-dribbble"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section><!-- share section -->
+	
+
+	<div class="row">
+		<br /><br /><br />
+	</div>
+	
+
+
+
+
+
+<section>
+	<div class="gap">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-4">
+					<div class="reviews nearby-user">
+						<h5>Edit Your Profile</h5>
+						<ul class="stars-rating">
+							<li><i class="lni lni-star-filled"></i></li>
+							<li><i class="lni lni-star-filled"></i></li>
+							<li><i class="lni lni-star-filled"></i></li>
+							<li><i class="lni lni-star-filled"></i></li>
+							<li><i class="lni lni-star-filled"></i></li>
+						</ul>
+						<form method="post" class="c-form" enctype="multipart/form-data">
+							{% csrf_token %}
+							<input required type="text" name="first_name" type="text" value="{{ app_user.first_name }}">
+							<input required type="text" name="last_name" type="text" value="{{ app_user.last_name }}">
+							<select style="width: 100%;
+                			height: 40px;
+                                  padding: 12px 20px;
+                                  margin: 8px 0;
+                                  display: inline-block;
+                                  border: 1px solid #ccc;
+                                  border-radius: 4px;
+                                  box-sizing: border-box;" name="interest" id="interest">
+								{% for item in interests %}
+							  		<option value="{{ item.name }}">{{ item.name }}</option>
+							  	{% endfor %}
+							</select>
+
+							<div class="attachments">
+								<ul>
+									<li>
+										<i class="lni lni-image"></i>
+										<label class="fileContainer">
+											<input name="cover_image" type="file" accept="image/png, image/gif, image/jpeg">
+										</label>
+									</li>
+									<li>
+										<i class="lni lni-image"></i>
+										<label class="fileContainer">
+											<input name="profile_photo" type="file" accept="image/png, image/gif, image/jpeg">
+										</label>
+									</li>
+									<li class="more-alt">
+										<i class="lni lni-more-alt"></i>
+									</li>
+								</ul>
+							</div>
+
+							<input required disabled type="text" value="{{ app_user.user.username }}">
+							<button type="submit" class="main-btn">Submit</button>
+						</form>
+					</div>
+				</div>
+
+
+
+
+
+				<div class="col-lg-8">
+					<section>
+						<div class="gap">
+							<div class="container">
+							<div class="row">
+							<h3 class="main-title">My Problems:</h3>
+						</div>
+						<div class="row merged-5">
+							{% if problems %}
+								{% for item in problems %}
+								<div class="nearby-user col-lg-4 col-6">
+									<br />
+									<video width="100%" height="auto" controls controlsList="nodownload">
+							          <source src="{{ item.video.url }}" type="video/mp4">
+							        </video> 
+								<div class="user-stats">
+									<div class="user-name">
+										<span>{{ item.title }}</span>
+										<span>{{ item.pub_date }}</span>
+									</div>
+								</div>
+
+
+								</div>
+
+								{% endfor %}
+
+							{% else %}
+
+								<p>Sorry no solutions yet!</p>
+								
+							{% endif %}
+							
+						</div>
+						<div class="loadmore gap">
+							<div class="loader">
+								<div class="line"></div>
+								<div class="line"></div>
+								<div class="line"></div>
+								<div class="line"></div>
+							</div>
+							<span>Loading...</span>
+						</div><!-- load more -->
+
+
+
+						</div>
+					</div>
+					</section>
+
+
+					<div class="row">
+						<br /><br /><br />
+					</div>
+					
+
+
+
+
+					<section>
+						<div class="gap">
+							<div class="container">
+
+							<div class="row">
+								<h3 class="main-title">My Solutions:</h3>
+							</div>
+							<div class="row merged-5">
+							{% if solutions %}
+								{% for item in solutions %}
+								<div class="nearby-user col-lg-4 col-6">
+									<br />
+									<video width="100%" height="auto" controls controlsList="nodownload">
+							          <source src="{{ item.video.url }}" type="video/mp4">
+							        </video> 
+								<div class="user-stats">
+									<div class="user-name">
+										<span><h1>{{ item.title }}</h1>
+											{{ item.pub_date }}
+										</span>
+									</div>
+								</div>
+
+								<div class="product-info">
+									<br />
+									<a href="#" title="" class="main-btn2">{{  item.claps.count}} Clap(s)</a>
+									<a href="#" title="" class="main-btn">{{ item.buzzers.count }} Buzz(es)</a>
+									<br />
+									<br />
+								</div>
+
+								</div>
+
+								{% endfor %}
+
+							{% else %}
+
+								<p>Sorry no solutions yet!</p>
+								
+							{% endif %}
+							
+						</div>
+						<div class="loadmore gap">
+							<div class="loader">
+								<div class="line"></div>
+								<div class="line"></div>
+								<div class="line"></div>
+								<div class="line"></div>
+							</div>
+							<span>Loading...</span>
+						</div><!-- load more -->
+
+
+
+					</div>
+					</div>
+					</section>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+
+
+
+{% endblock %}

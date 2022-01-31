@@ -1,0 +1,32 @@
+{% extends 'app_user/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<section>
+<div class="gap">
+<div class="container">
+	<div class="row">
+		<div class="col-lg-2">
+		</div>
+		<div class="col-lg-8">
+			<div class="nearby-user">
+				<img style="height:auto; 
+				width:50%;
+				max-height:200px;" src="{% static 'app_user/images/notify.png' %}" alt="">
+				<h1 style="font-size: 20px;">{{ msg |safe }}</h1>
+				<br />
+				<a style="font-size: 30px;" href="{% url 'app_user:index' %}" title="" class="main-btn">Okay!</a>
+			</div>
+
+		</div>
+		<div class="col-lg-2">
+		</div>
+	</div>
+</div>
+</div>
+</section>
+
+
+{% endblock %}

@@ -39,8 +39,6 @@ def ConfirmPaymentView(request):
 		return render(request, "admin_app/confirm_payment.html", context)
 
 
-
-
 def SignInView(request):
 
 	if request.method == "POST":
@@ -142,6 +140,8 @@ def DeleteCategoryView(request, category_id):
 		}
 
 		return render(request, "admin_app/delete_category.html", context)
+		
+
 		
 
 
@@ -347,6 +347,9 @@ def ApproveSolutionView(request, solution_id):
 			solution.status = True
 
 		solution.save()
+		
+		nt = Notification.objects.create(app_user=solution.app_user, detail="Your solution video for (%s) have been approved!" % (solution.title), object_id="None")
+		nt.save()
 
 		return HttpResponseRedirect(reverse("admin_app:problem_detail", args=[problem_id,]))
 
@@ -392,6 +395,16 @@ def ApproveProblemView(request, problem_id):
 			problem.status = True
 
 		problem.save()
+		
+		nt = Notification.objects.create(app_user=problem.app_user, detail="Your problem video (%s) has been approved!" % (problem.title), object_id="None")
+		nt.save()
+				
+
+		app_users = AppUser.objects.all()
+		for item in app_users:
+			if item.interest == problem.category:
+				nt2 = Notification.objects.create(app_user=item, detail="New Problem Alert! (%s)" % (problem.title), object_id="None")
+				nt2.save()
 
 		return HttpResponseRedirect(reverse("admin_app:problem_detail", args=[problem_id,]))
 

@@ -29,8 +29,6 @@ from django.db.models import Q
 
 
 
-
-
 #########
 #lp shit!
 def IndexView(request):
@@ -67,10 +65,30 @@ def ContactView(request):
         return render(request, "main/contact.html", context)
 
 
+def FaqView(request):
+    if request.method == "POST":
+        pass
+
+
+    else:
+        
+        context = {}
+        return render(request, "main/faq.html", context)
 
 
 
 
+def id_generator(size=12, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+def RayRename(old_path):
+
+    ext = old_path[-3:]
+    new_path = str(old_path[:-4])
+    new_path = new_path + id_generator() +"." + ext
+    
+    return new_path
 
 
 
@@ -130,7 +148,7 @@ def RemoveVideoFunc():
 
 
 
-RemoveVideoFunc()
+#RemoveVideoFunc()
 
 def ray_randomiser(length=12):
     landd = string.ascii_letters + string.digits
@@ -141,19 +159,22 @@ def ray_randomiser(length=12):
 
 def RaySendMail(subject, message, to_email, code=None):
 
-    context = {"subject": subject, "message": message, "code": code}
-    html_message = render_to_string('main/message.html', context)
-    message = strip_tags(message)
+    try:
+        context = {"subject": subject, "message": message, "code": code}
+        html_message = render_to_string('main/message.html', context)
+        message = strip_tags(message)
+    
+        send_mail(
+            subject,
+            message,
+            'hello@helloonions.com',
+            [to_email,],
+            html_message=html_message,
+            fail_silently=False,
+        )
 
-    send_mail(
-        subject,
-        message,
-        'app@helloonions.com',
-        [to_email,],
-        html_message=html_message,
-        fail_silently=False,
-    )
-
+    except:
+        pass
 
 
 
@@ -163,14 +184,14 @@ def NewProblemAlert(category):
     app_users = AppUser.objects.filter(interest=category)
 
     for item in app_users:
-        RaySendMail("New Problem Alert!", "You have a new problem needs your solution!", app_user.user.username)
+        RaySendMail("New Problem Alert!", "You have a new problem needs your solution!", item.user.username)
 
 
 
 def EndTimeAlert(solution_id):
 
-    solution = Solution.objects.get(id=item)
-    RaySendMail("Congratulations!", "Your solution(%s) with %s claps turned out to be the best!" % (solution.title, solution.claps.count()), app_user.user.username)
+    solution = Solution.objects.get(id=solution_id)
+    RaySendMail("Congratulations!", "Your solution(%s) with %s claps turned out to be the best!" % (solution.title, solution.claps.count()), solution.app_user.user.username)
 
 
 @api_view(['POST'])
@@ -197,7 +218,7 @@ def SignUpView(request):
             app_user.request_code = request_code
             app_user.save()
 
-            RaySendMail("Authentication", "Welcome to Onion, Please use the authentication code below to complete your sign up!", app_user.user.username, code=request_code)
+            RaySendMail("Authentication", "Welcome to Onions, Please use the authentication code above to complete your sign up!", app_user.user.username, code=request_code)
 
 
             data = {"status": "sign up successful", "status_lean": True}
@@ -250,6 +271,7 @@ def SignInView(request):
                 "auth_code": app_user.auth_code,
                 "first_name": app_user.first_name,
                 "last_name": app_user.last_name,
+                "payment_status": app_user.payment_status,
             }
 
             serializer = SignInStatusSerializer(data=data)
@@ -295,6 +317,7 @@ def ACGetAppUserView(request, auth_code):
                 "first_name": app_user.first_name,
                 "last_name": app_user.last_name,
                 "email": app_user.user.username,
+                "payment_status": app_user.payment_status,
             }
 
         serializer = AppUserSerializer(data=data)
@@ -322,6 +345,7 @@ def IDGetAppUserView(request, app_user_id):
                 "first_name": app_user.first_name,
                 "last_name": app_user.last_name,
                 "email": app_user.user.username,
+                "payment_status": app_user.payment_status,
             }
 
         serializer = AppUserSerializer(data=data)
@@ -387,9 +411,10 @@ def AddProblemView(request):
 
         app_user = AppUser.objects.get(auth_code=auth_code)
 
-        category = Category.objects.create(name=category, creator=app_user)
+        category = Category.objects.create(name=category, creator=str(app_user.user.username))
         category.save()
-        problem = Problem.objects.create(app_user=app_user, auth_code=app_user.auth_code, app_user_name1=app_user.first_name, app_user_name2=app_user.last_name, profile_photo=app_user.profile_photo, title=title, detail=detail, category=category)
+        
+        problem = Problem.objects.create(app_user=app_user, auth_code=app_user.auth_code, app_user_name1=app_user.first_name, app_user_name2=app_user.last_name, profile_photo=app_user.profile_photo, title=title, detail=detail, category=category.name)
         
         if tag1:
             problem.tag1 = tag1
@@ -409,13 +434,14 @@ def AddProblemView(request):
 
         problem.video = video
         problem.save()
-
-        os.rename(problem.video.path, RayRename(problem.video.path))
+        
+        #os.rename(problem.video.path, RayRename(problem.video.path))
 
         NewProblemAlert(problem.category)
 
         data = {
             "status": "Problem added successfully",
+            "status_lean": True,
             "problem_id": problem.id,
         }
 
@@ -611,9 +637,12 @@ def AddSolutionView(request):
         solution = Solution.objects.create(app_user=app_user, auth_code=app_user.auth_code, app_user_name1=app_user.first_name, app_user_name2=app_user.last_name, profile_photo=app_user.profile_photo, problem=problem, title=title, detail=detail)
         solution.video = video
         solution.save()
+        
+        #os.rename(solution.video.path, RayRename(solution.video.path))
 
         data = {
             "status": "Solution added successfully",
+            "status_lean": True,
             "solution_id": solution.id,
         }
 
@@ -743,7 +772,7 @@ def GetAllProblemsView(request):
 
         #RemoveVideoFunc()
 
-        problems = Problem.objects.all().order_by('-pub_date')
+        problems = Problem.objects.filter(status=True).order_by('-pub_date')
 
         serializer = ProblemSerializer(problems, many=True)
         if serializer:
@@ -751,6 +780,25 @@ def GetAllProblemsView(request):
 
         else:
             return HttpResponse(str("errors!"))
+            
+            
+
+@api_view(['GET'])
+def GetAppUserNotificationView(request, auth_code):
+    if request.method == 'GET':
+
+        #RemoveVideoFunc()
+
+        notifications = Notification.objects.filter(app_user__auth_code=auth_code).order_by('-pub_date')
+
+        serializer = NotificationSerializer(notifications, many=True)
+        if serializer:
+            return Response(serializer.data)
+
+        else:
+            return HttpResponse(str("errors!"))
+            
+            
 
 @api_view(['GET'])
 def GetProblemDetailView(request, auth_code, problem_id):
@@ -918,6 +966,13 @@ def AddProblemClapView(request):
             if clap.app_user.id == app_user.id:
                 hand_status = True
                 
+        buzz_status = False
+        for buzz in problem.buzzers.all():
+            if buzz.app_user.id == app_user.id:
+                buzz_status = True
+                buzz.delete()
+                problem.save()
+                
         if hand_status == True:
             data = {"status": "Sorry, you clapped already", "status_lean": False}
 
@@ -928,17 +983,18 @@ def AddProblemClapView(request):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+            
+            
 
         else:
-
+            
             clap = Clap.objects.create(app_user=app_user)
 
             pc = ProblemClapConnector(problem=problem, clap=clap)
             pc.save()
             
             problem.clap_count = problem.claps.count()
+            problem.buzzer_count = problem.buzzers.count()
             problem.save()
 
             data = {"status": "Clap added successfully", "status_lean": True}
@@ -970,6 +1026,13 @@ def AddProblemBuzzView(request):
             if buzz.app_user.id == app_user.id:
                 hand_status = True
                 
+        clap_status = False
+        for clap in problem.claps.all():
+            if clap.app_user.id == app_user.id:
+                clap_status = True
+                clap.delete()
+                problem.save()
+                
         if hand_status == True:
             data = {"status": "Sorry, you buzzed already.", "status_lean": False}
 
@@ -980,8 +1043,7 @@ def AddProblemBuzzView(request):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+            
 
         else:
 
@@ -992,6 +1054,7 @@ def AddProblemBuzzView(request):
             pb.save()
             
             problem.buzzer_count = problem.buzzers.count()
+            problem.clap_count = problem.claps.count()
             problem.save()
 
             data = {"status": "Buzz added successfully", "status_lean": True}
@@ -1025,6 +1088,15 @@ def AddSolutionClapView(request):
             if clap.app_user.id == app_user.id:
                 hand_status = True
                 
+        
+        buzz_status = False
+        for buzz in solution.buzzers.all():
+            if buzz.app_user.id == app_user.id:
+                buzz_status = True
+                buzz.delete()
+                solution.save()
+                
+                
         if hand_status == True:
             data = {"status": "Sorry, you clapped already.", "status_lean": False}
 
@@ -1046,6 +1118,7 @@ def AddSolutionClapView(request):
             sc.save()
             
             solution.clap_count = solution.claps.count()
+            solution.buzzer_count = solution.buzzers.count()
             solution.save()
 
             data = {"status": "Clap added successfully", "status_lean": True}
@@ -1077,6 +1150,14 @@ def AddSolutionBuzzView(request):
             if buzz.app_user.id == app_user.id:
                 hand_status = True
                 
+        clap_status = False
+        for clap in solution.claps.all():
+            if clap.app_user.id == app_user.id:
+                clap_status = True
+                clap.delete()
+                solution.save()
+                
+                
         if hand_status == True:
             data = {"status": "Sorry, you buzzed already.", "status_lean": False}
 
@@ -1098,6 +1179,7 @@ def AddSolutionBuzzView(request):
             sb.save()
             
             solution.buzzer_count = solution.buzzers.count()
+            solution.clap_count = solution.claps.count()
             solution.save()
             
             data = {"status": "Buzz added successfully", "status_lean": True}
@@ -1443,7 +1525,7 @@ def FindAllProblemsCView(request):
     if request.method == 'POST':
         category = request.data["category"]
 
-        problems = Problem.objects.filter(category=category).order_by('-pub_date')
+        problems = Problem.objects.filter(category=category, status=True).order_by('-pub_date')
 
         serializer = ProblemSerializer(problems, many=True)
         if serializer:
@@ -1456,7 +1538,7 @@ def FindAllProblemsTiView(request):
     if request.method == 'POST':
         title = request.data["title"]
 
-        problems = Problem.objects.filter(title=title).order_by('-pub_date')
+        problems = Problem.objects.filter(title=title, status=True).order_by('-pub_date')
 
         serializer = ProblemSerializer(problems, many=True)
         if serializer:
@@ -1471,7 +1553,7 @@ def GetTimelineView(request):
 
         #RemoveVideoFunc()
 
-        problems = Problem.objects.all()
+        problems = Problem.objects.filter(status=True)
         solutions = Solution.objects.all()
         timeline = []
 
@@ -1498,15 +1580,17 @@ def GetTimelineView(request):
                 "problem_uploader_name2": i.app_user_name2,
                 "problem_uploader_photo": i.profile_photo.url,
 
-                "solutions_count": top_solutions.count()
+                "solutions_count": top_solutions.count(),
+                
+                "switch_date": i.switch_date,
 
                 }
 
 
                 for item in top_solutions:
 
-
-                    i_list['solution%s' % (item.id)] = {
+                    #i_list['solution%s' % (item.id)] = {
+                    i_list['solution'] = {
 
                         "solution_title": item.title,
                         "solution_video": item.video.url,
@@ -1521,7 +1605,8 @@ def GetTimelineView(request):
                         }
 
                     if i.status == True:
-                        EndTimeAlert(item.id)
+                        pass
+                        #EndTimeAlert(item.id)
 
                 timeline.append(i_list)
             

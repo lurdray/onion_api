@@ -1,0 +1,40 @@
+{% extends 'app_user/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<section>
+<div class="gap">
+<div class="container">
+	<div class="row">
+		<div class="col-lg-2">
+		</div>
+		<div class="col-lg-8">
+			<div class="nearby-user">
+				<img style="height:auto; 
+				width:50%;
+				max-height:200px;" src="{% static 'app_user/images/notify.png' %}" alt="">
+				<br />
+				<form class="c-form" method="post" enctype="multipart/form-data">
+				    {% csrf_token %}
+				    <h1>Please check your Email Address for your Auth Code.</h1>
+				    {% if msg %}
+				    <br />
+				    <p style="color: red;">{{ msg }}</p>
+				    {% endif %}
+			        <input required class="form-control" type="text" name="auth_code" placeholder="Input Auth Code">
+			    	<button class="main-btn" style="font-size: 30px;" type="submit">Verify!</button>
+			    </form>
+			</div>
+
+		</div>
+		<div class="col-lg-2">
+		</div>
+	</div>
+</div>
+</div>
+</section>
+
+
+{% endblock %}

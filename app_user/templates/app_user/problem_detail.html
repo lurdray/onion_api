@@ -1,0 +1,172 @@
+
+{% extends 'app_user/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+<section>
+	<div class="gap">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-4">
+					<div class="reviews nearby-user">
+					<h5>Upload your Solution</h5>
+					<span>...</span>
+					<ul class="stars-rating">
+						<li><i class="lni lni-star-filled"></i></li>
+						<li><i class="lni lni-star-filled"></i></li>
+						<li><i class="lni lni-star-filled"></i></li>
+						<li><i class="lni lni-star-filled"></i></li>
+						<li><i class="lni lni-star-filled"></i></li>
+					</ul>
+					{% if app_user %}
+					<form method="post" class="c-form" enctype="multipart/form-data">
+						{% csrf_token %}
+
+						<input disabled type="text" value="{{ app_user.first_name }} {{ app_user.last_name }}">
+						<input disabled type="text" value="{{ app_user.user.username }}">
+					<div class="attachments">
+						<ul>
+						<li>
+							<i class="lni lni-video"></i>
+							<label class="fileContainer">
+								<input required name="video" type="file" accept="video/mp4,video/x-m4v,video/*">
+							</label>
+						</li>
+							
+						</ul>
+						</div>
+						
+						<button style="width: 150px; height:50px;" type="submit" class="main-btn">Upload Solution</button>
+						
+					</form>
+					{% else %}
+					        <br />
+						    <a href="{% url 'app_user:sign_up' %}">
+						    <button style="width: 150px; height:50px;" class="main-btn">Sign Up!</button>
+						    </a>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-lg-6">
+				    <div class="nearby-user">
+    					<h5 class="main-title">{{ problem.title }}</h5>
+    					<div class="row merged-5">
+    						<div class="col-lg-12 col-12">
+    
+    							<div class="video">
+    								<a href="{{ problem.video.url }}" title="{{ problem.title }}" class="html5lightbox"><img style="width: 600px;
+                                              height: 300px;
+                                              object-fit: fill;
+                                            }" src="{{ problem.cover_image.url }}" alt=""><i class="lni lni-play"></i></a>
+    							</div>
+    						</div>
+    					</div>
+    					<br />
+    					<p>{{ problem.detail }}</p>
+    					<br /><br /><br /><br />
+    					<div class="row">
+    						<h3 class="main-title">Solution: {{ problem.title }}</h3>
+    					</div>
+    					<div class="row merged-5">
+    						{% if solutions %}
+    							{% for item in solutions %}
+    
+    								{% if item.status == True %}
+    									<div class="nearby-user col-lg-4 col-6">
+    										<br />
+    										<video width="100%" height="auto" controls controlsList="nodownload">
+    								          <source src="{{ item.video.url }}" type="video/mp4">
+    								        </video> 
+    										<div class="video">
+    											<a href="{{ item.video.url }}" title="" class="html5lightbox"><i style="margin-top: -80px;" class="lni lni-play"></i></a>
+    										</div>
+    									<div class="user-stats" style="margin-top: -25px;">
+    										<div class="user-name">
+    											<span>{{ item.pub_date }}</span>
+    										</div>
+    
+    										<div class="coment-state">
+    											<span><i class="lni lni-video"></i>{{ item.claps.count }} Claps</span>
+    											<span><i class="lni lni-video"></i>{{ item.buzzers.count }} Buzzes</span>
+    										</div>
+    									</div>
+    
+    									<div class="product-info">
+    										<br />
+    										{% if app_user %}
+    										<div class="row">
+    											<div class="col-lg-6 col-md-6 col-sm-6">
+    												<form action="{% url 'app_user:clap_solution' item.id %}" method="post">
+    													{% csrf_token %}
+    													<button type="submit" class="main-btn2">Clap</button>
+    												</form>
+    											</div>
+    											<div class="col-lg-6 col-md-6 col-sm-6">
+    												<form action="{% url 'app_user:buzz_solution' item.id %}" method="post">
+    													{% csrf_token %}
+    													<button type="submit" class="main-btn2">Buzz</button>
+    												</form>
+    											</div>
+    										</div>
+    										
+    										{% else %}
+    										    <a href="{% url 'app_user:sign_up' %}">
+                    						    <button style="width: 150px; height:50px;" class="main-btn">Sign Up!</button>
+                    						    </a>
+                    						    
+                    						{% endif %}
+    										
+    										<br />
+    										<br />
+    									</div>
+    
+    									</div>
+    
+    								{% endif %}
+    
+    							{% endfor %}
+    
+    						{% else %}
+    
+    							<p>Sorry, no solutions yet!</p>
+    							<p>Be the first to provide a solution for this problem </p> <a class="main-btn2 add-solution" href="#">Add Solution</a>
+    							<div class="topbar">
+    							<div class="new-post2 ico-hover" title="Create New Post"><i class="lni lni-plus"></i></div>
+    							</div>
+    
+    						{% endif %}
+    						
+    					</div>
+    					<div class="loadmore gap">
+    						<div class="loader">
+    							<div class="line"></div>
+    							<div class="line"></div>
+    							<div class="line"></div>
+    							<div class="line"></div>
+    						</div>
+    						<span>Loading...</span>
+    					</div><!-- load more -->
+    				</div>
+    			</div>
+				<div class="col-lg-2">
+
+					<div class="nearby-user reviews" style="height: 100%; max-height: 500px; background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ5w5BXDPelTpOqwYRRgoVAgH_sLPPpuT88nGn5ryW78HKfg6HXFlSlWUvQoT4lrYbqwc&usqp=CAU);">
+						
+					</div>
+					<br />
+					<div class="nearby-user reviews" style="height: 100%; max-height: 500px; background-image: url(https://d1csarkz8obe9u.cloudfront.net/posterpreviews/yellow-gym-ad-roll-up-banner-design-template-d0ec715151bc8212817bc511aab36528_screen.jpg?ts=1637223339);">
+						
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+
+
+{% endblock %}

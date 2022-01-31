@@ -18,8 +18,8 @@ url = "https://helloonions.com/sign-up/"
 data = {
     "first_name": "ray guy",
     "last_name": "ray man",
-    "email": "raymondrayodiaga@gmail.com",
-    "password": "0000"
+    "email": "test1@helloonions.com",
+    "password": "test1@2021*"
 }
 
 #r = requests.post(url, data=data)
@@ -39,7 +39,7 @@ print(r.json())
 url = "https://helloonions.com/add-problem/"
 files = {'video': open('/home/raymond/Downloads/yf.mp4','rb')}
 data = {
-	'auth_code': "jtjm814njt16xwlbpidzbzu5qp0fl09j",
+	'auth_code': "fvt7646tas7ouvg2ur0ghh183hzs7wsm",
     'title' : "test from ray",
     'category' : "category ray",
     'duration' : "24hrs",
@@ -47,8 +47,8 @@ data = {
     'detail'  : "this is a test from ray"
 }
 
-#r = requests.post(url, files=files, data=data)
-#print(r.json())
+r = requests.post(url, files=files, data=data)
+print(r.json())
 
 
 url = "https://helloonions.com/add-solution/"
@@ -96,8 +96,8 @@ data = {
     'solution_id': "22",
 }
 
-r = requests.post(url, data=data)
-print(r.status_code)
+#r = requests.post(url, data=data)
+#print(r.status_code)
 
 
 

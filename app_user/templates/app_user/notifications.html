@@ -1,0 +1,41 @@
+{% extends 'app_user/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<section>
+<div class="gap">
+<div class="container">
+	<div class="row">
+		<div class="col-12">
+
+			{% for item in notifications %}
+			    <h5>My Notifications</h5>
+				<div class="activity">
+					<div class="history-meta">
+						<h5><a title="" href="#">{{ item.detail }}</a></h5>
+						<span>{{ item.pub_date }}</span>
+					</div>
+					<hr>
+				</div>
+			{% endfor %}
+
+			<div class="loadmore gap">
+				<div class="loader">
+					<div class="line"></div>
+					<div class="line"></div>
+					<div class="line"></div>
+					<div class="line"></div>
+				</div>
+				<span>Loading...</span>
+			</div><!-- load more -->
+
+		</div>
+	</div>
+</div>
+</div>
+</section>
+
+
+{% endblock %}

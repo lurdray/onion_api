@@ -1,0 +1,357 @@
+{% load static %}
+	
+	
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    
+	<title>ONIONS</title>
+	<link rel="stylesheet" href="{% static 'app_user/css/main.min.css'%}">
+	<link rel="stylesheet" href="{% static 'app_user/css/style.css'%}">
+	<link rel="stylesheet" href="{% static 'app_user/css/color.css'%}">
+	
+</head>
+<body class="full-page">
+<div class="row no-gutters vh-100 loader-screen" style="background-color: white;">
+    <div class="col align-self-center text-white text-center">
+        <img src="https://www.helloonions.com/static/logo1.png" alt="logo">
+        {% if app_user %}
+        <div class="laoderhorizontal">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="app-layout">
+	
+	<header class="topbar">
+		<div class="back-btn ico-hover" title="Back"><i class="lni lni-angle-double-left"></i></div>
+		<div class="top-search ico-hover" title="Search"><i class="lni lni-search-alt"></i></div>
+		<div class="logo-place"><a href="#" title=""><img src="images/logo.png" alt=""></a></div>
+		{% if app_user %}
+		<div class="ac-settings ico-hover" title="Settings"><i class="lni lni-radio-button"></i></div>
+		{% endif %}
+		<div class="new-post ico-hover" title="Create New Post"><i class="lni lni-plus"></i></div>
+	</header>
+
+	<div class="bottom-header">
+	    {% if app_user %}
+		<ul class="menu-left">
+			<li><a class="ico-hover" href="{% url 'app_user:index' %}" title=""><i class="lni lni-home"></i></a></li>
+			<li><a class="ico-hover" href="{% url 'app_user:notifications' %}" title=""><i class="lni lni-alarm"></i></a><span>3</span></li>
+		</ul>
+		<div id="nav-icon2" class="menu-button">
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+			<span></span>
+		</div>
+		<ul class="menu-right">
+			<li><a class="ico-hover" href="{% url 'app_user:timeline' %}" title=""><i class="lni lni-comments"></i></a></li>
+			<li class=""><a class="ico-hover" href="{% url 'app_user:profile' %}" title=""><i class="lni lni-user"></i></a></li>
+		</ul>
+		{% endif %}
+	</div>
+
+	<nav>
+	  <ul class="menu">
+		  <li data-text="Home"><a href="{% url 'app_user:index' %}" title=""><i><img src="{% static 'app_user/images/svg/home.png' %}" alt=""></i><span>Home</span></a></li>
+		  <li data-text="Home"><a href="{% url 'app_user:profile' %}" title=""><i><img src="{% static 'app_user/images/svg/user.png' %}" alt=""></i><span>My Profile</span></a></li>
+		   <li data-text="Home"><a href="{% url 'app_user:profile' %}" title=""><i><img src="{% static 'app_user/images/svg/user.png' %}" alt=""></i><span>Notification</span></a></li>
+		    <li data-text="Home"><a href="{% url 'app_user:profile' %}" title=""><i><img src="{% static 'app_user/images/svg/user.png' %}" alt=""></i><span>Timeline</span></a></li>
+		  
+	  </ul>
+	</nav><!-- compact nav menu -->
+
+	<section>
+		<div class="gap redishs high-opacity">
+			<div class="content-bg-wrap" style="height: 80px;"></div>
+			<div class="container">
+				<div class="row" style="height: 20px;">
+					<div class="col-12">
+						<div class="head-meta">
+							<h5>
+							    <a href="{% url 'app_user:index' %}"><img style="margin-top: -40px; height: 100px; width: 100px;" src="https://www.helloonions.com/static/logo1.png"></a></h5>
+							<ul class="breadcrumb">
+								<li><a href="#" title=""><p style="color: purple; font-size: 15px;">Share Problems. Find Solutions.</p></a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	
+	<section>
+		<div class="gap no-gap">
+			<div class="good-day-notification">
+				<h4>Hello, {{ app_user.first_name }} {{ app_user.lastname }}</h4>
+				<p style="font-size: 15px;">Welcome to the Onions Community.</p>
+				<div class="day-icon">
+					<img style="width: 60px; height: 60px; border-radius: 100px;" src="{% if app_user %}{{ app_user.profile_photo.url }}{% else %}https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg{% endif %}" alt="">
+				</div>
+			</div>
+		</div>
+	</section>
+
+	
+	
+
+
+
+	{% block content %}
+
+
+						
+
+
+	{% endblock %}
+
+
+
+	<div class="bottombar">
+		<span>&copy;Onions Copyright All rights Reserved 2022</span>
+	</div>
+    
+    {% if app_user %}
+	<div class="side-slide">
+		<span class="close-btn"><i class="lni lni-cross-circle"></i></span>
+		<div class="user-avatar">
+			<figure><img style="width: 200px; height: 200px;" src="{{ app_user.profile_photo.url }}" alt=""><span class="status status greenbg"></span></figure>
+			<div class="user-options">
+				<h5>{{ app_user.first_name }} {{ app_user.first_name }}</h5>
+				<a href="{% url 'app_user:profile' %}" title="">view profile</a>
+			</div>
+		</div>
+		<ul>
+			<li><a href="{% url 'app_user:index' %}" title=""><i class="lni lni-home"></i>Home</a></li>
+			<li><a href="{% url 'app_user:profile' %}" title=""><i class="lni lni-user"></i>Profile</a></li>
+			<li><a href="{% url 'app_user:notifications' %}" title=""><i class="lni lni-home"></i>Notification</a></li>
+			<li><a href="{% url 'app_user:timeline' %}" title=""><i class="lni lni-home"></i>Timeline</a></li>
+			<li><a href="#" title=""><i class="lni lni-power-switch"></i>Logout</a></li>
+		</ul>
+		<div class="night-mode">
+			<i class="lni lni-night"></i>Night Mode 
+			<input type="checkbox" hidden="hidden" id="night-mode">
+			<label class="switch" for="night-mode"></label>
+		</div>
+	</div><!-- side panel -->
+
+	<div class="search-post">
+		<span class="close-btn"><i class="lni lni-cross-circle"></i></span>
+		<div class="search-area">
+			<h5 class="main-title">Search By</h5>
+			<form method="post">
+				<input type="text" placeholder="Search #tag, title, category, etc..">
+				<div class="filter-search">
+					<div>
+						<i class="lni lni-calendar"></i>
+						<input type="checkbox" id="event">
+  						<label for="event">Title</label>
+					</div>
+					<div>
+						<i class="lni lni-calendar"></i>
+						<input type="checkbox" id="event">
+  						<label for="event">Category</label>
+					</div>
+					<div>
+						<i class="lni lni-calendar"></i>
+						<input type="checkbox" id="event">
+  						<label for="event">Tags</label>
+					</div>
+				</div>
+				<button type="submit">Find</button>
+			</form>
+		</div>
+	</div><!-- search -->
+
+	<div class="create-new">
+		<div class="post-form">
+			<h5>Share your problem</h5>
+			<span class="close-btn"><i class="lni lni-cross-circle"></i></span>
+			<form class="c-form" method="post" action="{% url 'app_user:add_problem' %}" enctype="multipart/form-data">
+				{% csrf_token %}
+			<input required class="form-control" type="text" name="title" placeholder="Enter a title">
+			<input required class="form-control" type="text" name="tag" placeholder="Tag">
+			<textarea required name="detail" placeholder="Enter a brief explanation."></textarea>
+
+ 
+			<select style="width: 100%;
+                			height: 40px;
+                  padding: 12px 20px;
+                  margin: 8px 0;
+                  display: inline-block;
+                  border: 1px solid #ccc;
+                  border-radius: 4px;
+                  box-sizing: border-box;" required name="category" id="category">
+				{% for item in categories %}
+			  		<option value="{{ item.name }}">{{ item.name }}</option>
+			  	{% endfor %}
+			</select>
+			
+			<select style="width: 100%;
+                                			height: 40px;
+                                  padding: 12px 20px;
+                                  margin: 8px 0;
+                                  display: inline-block;
+                                  border: 1px solid #ccc;
+                                  border-radius: 4px;
+                                  box-sizing: border-box;" required name="duration" id="duration">
+			  	<option value="24">24hrs</option>
+			  	<option value="48">48hrs</option>
+			  	<option value="72">72hrs</option>
+			</select>
+				<div class="attachments">
+					<ul>
+						<li>
+							<i class="lni lni-image"></i>
+							<label class="fileContainer">
+								<input name="cover_image" type="file" accept="image/png, image/gif, image/jpeg">
+							</label>
+						</li>
+						<li>
+							<i class="lni lni-video"></i>
+							<label class="fileContainer">
+								<input name="video" type="file" accept="video/mp4,video/x-m4v,video/*">
+							</label>
+						</li>
+						<li class="more-alt">
+							<i class="lni lni-more-alt"></i>
+						</li>
+					</ul>
+					<div class="more-alt-options">
+						<ul>
+							<li><a href="#" title=""><img src="images/svg/recommend.png" alt="">Ask for Recommendation</a></li>
+							<li><a href="#" title=""><img src="images/svg/live.png" alt="">Go Live</a></li>
+							<li><a href="#" title=""><img src="images/svg/map-marker.png" alt="">Check in</a></li>
+							<li><a href="#" title=""><img src="images/svg/gif.png" alt="">Gif</a></li>
+						</ul>
+						<ol class="post-to-also">
+							<li>
+								<input type="checkbox" id="switch0002" /> 
+								<label for="switch0002" data-on-label="ON" data-off-label="OFF"></label>
+								<i class="lni lni-circle-plus"></i>
+								NewsFeed
+							</li>
+							<li>
+								<input type="checkbox" id="switch0003" /> 
+								<label for="switch0003" data-on-label="ON" data-off-label="OFF"></label>
+								<figure><img src="images/resources/user1.jpg" alt=""></figure>Your Story
+							</li>
+						</ol>
+					</div>
+				</div>
+				<button type="submit">Upload Problem</button>
+			</form>
+		</div>
+	</div><!-- create new post -->
+
+
+
+	<div class="share-wraper">
+		<div class="share-options">
+			<span class="close-btn"><i class="lni lni-cross-circle"></i></span>
+			<h5>Share To!</h5>
+			<form method="post">
+				<textarea placeholder="Write Something"></textarea>
+			</form>
+			<ul>
+				<li><a href="#" title="">Your Timeline</a></li>
+				<li class="friends"><a href="#" title="">To Friends</a></li>
+				<li class="socialz"><a href="#" title="">Social Media</a></li>
+			</ul>
+			<div class="social-media" style="display: none;">
+				<ul>
+					<li><a class="facebook" href="#" title=""><i class="lni lni-facebook"></i></a></li>
+					<li><a class="twitter" href="#" title=""><i class="lni lni-twitter"></i></a></li>
+					<li><a class="instagram" href="#" title=""><i class="lni lni-instagram"></i></a></li>
+					<li><a class="pinterest" href="#" title=""><i class="lni lni-pinterest"></i></a></li>
+					<li><a class="youtube" href="#" title=""><i class="lni lni-youtube"></i></a></li>
+					<li><a class="dribble" href="#" title=""><i class="lni lni-dribbble"></i></a></li>
+					<li><a class="behance" href="#" title=""><i class="lni lni-behance-original"></i></a></li>
+				</ul>
+			</div>
+			<div class="friends-to" style="display: none;">
+				<div class="follow-men">
+					<figure><img alt="" src="images/resources/user1.jpg" class="mCS_img_loaded"></figure>
+					<div class="follow-meta">
+						<h5><a title="" href="#">Jack Carter</a></h5>
+						<span>family member</span>
+					</div>
+					<a title="" href="#">Share</a>
+				</div>
+				<div class="follow-men">
+					<figure><img alt="" src="images/resources/user2.jpg" class="mCS_img_loaded"></figure>
+					<div class="follow-meta">
+						<h5><a title="" href="#">Xang Ching</a></h5>
+						<span>Close Friend</span>
+					</div>
+					<a title="" href="#">Share</a>
+				</div>
+				<div class="follow-men">
+					<figure><img alt="" src="images/resources/user3.jpg" class="mCS_img_loaded"></figure>
+					<div class="follow-meta">
+						<h5><a title="" href="#">Emma Watson</a></h5>
+						<span>Matul Friend</span>
+					</div>
+					<a title="" href="#">Share</a>
+				</div>
+			</div>
+			<button class="main-btn" type="submit">Publish</button>
+		</div>
+	</div>
+	
+	{% endif %}
+	
+</div>
+	
+
+	<script src="{% static 'app_user/js/main.min.js'%}"></script>
+	<script src="{% static 'app_user/js/jquery-stories.js'%}"></script>
+	<script src="{% static 'app_user/js/script.js'%}"></script>
+
+
+	<script>
+  // Set the date we're counting down to
+  var countDownDate = new Date("{{ problem.switch_date }}").getTime();
+
+  // Update the count down every 1 second
+  var x = setInterval(function() {
+
+    // Get today's date and time
+    var now = new Date().getTime();
+
+
+    // Find the distance between now and the count down date
+    var distance = countDownDate - now;
+    //var distance = "{{ counter }}";
+
+    // Time calculations for days, hours, minutes and seconds
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById("ray_counter").innerHTML = days + "d " + hours + "h "
+    + minutes + "m " + seconds + "s ";
+
+    // If the count down is finished, write some text
+    if (distance < 0) {
+      clearInterval(x);
+      document.getElementById("ray_counter").innerHTML = "EXPIRED";
+    }
+  }, 1000);
+</script>
+
+	
+</body>
+</html>
